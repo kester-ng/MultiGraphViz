@@ -17,6 +17,7 @@ find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
 find_package(Boost REQUIRED regex date_time system filesystem thread graph)
 include_directories(${BOOST_INCLUDE_DIRS})
 find_package(Graphviz REQUIRED)
+
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -32,6 +33,15 @@ set(PROJECT_SOURCES
         graph/private/QGVGraphPrivate.cpp
         graph/private/QGVGvcPrivate.h
         graph/private/QGVGvcPrivate.cpp
+        graph/QGVEdge.h
+        graph/QGVEdge.cpp
+        graph/qgv.h
+        graph/QGVScene.h
+        graph/QGVScene.cpp
+        graph/QGVNode.h
+        graph/QGVNode.cpp
+        graph/QGVSubGraph.h
+        graph/QGVSubGraph.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -57,7 +67,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets cgraph gvc)
 
 set_target_properties(MultiGraphViz PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
