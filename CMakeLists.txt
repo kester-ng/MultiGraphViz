@@ -10,15 +10,20 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
-
+find_package(Boost REQUIRED regex date_time system filesystem thread graph)
+include_directories(${BOOST_INCLUDE_DIRS})
+find_package(Graphviz REQUIRED)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        graph/private/qgvnodeprivate.h
+        graph/private/qgvnodeprivate.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
