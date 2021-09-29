@@ -22,8 +22,16 @@ set(PROJECT_SOURCES
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
-        graph/private/qgvnodeprivate.h
-        graph/private/qgvnodeprivate.cpp
+        graph/private/QGVNodePrivate.h
+        graph/private/QGVNodePrivate.cpp
+        graph/private/QGVCore.h
+        graph/private/QGVCore.cpp
+        graph/private/QGVEdgePrivate.h
+        graph/private/QGVEdgePrivate.cpp
+        graph/private/QGVGraphPrivate.h
+        graph/private/QGVGraphPrivate.cpp
+        graph/private/QGVGvcPrivate.h
+        graph/private/QGVGvcPrivate.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
