@@ -2,20 +2,28 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "graph/QGVScene.h"
 
-QT_BEGIN_NAMESPACE
-namespace Ui { class MainWindow; }
-QT_END_NAMESPACE
+namespace Ui {
+class MainWindow;
+}
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    MainWindow(QWidget *parent = nullptr);
+    explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    void drawGraph();
+
+private slots:
+    void nodeContextMenu(QGVNode* node);
+    void nodeDoubleClick(QGVNode* node);
 
 private:
     Ui::MainWindow *ui;
+    QGVScene *_scene;
 };
+
 #endif // MAINWINDOW_H

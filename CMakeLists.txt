@@ -10,15 +10,41 @@ set(CMAKE_AUTORCC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
 
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
+find_package(Boost REQUIRED regex date_time system filesystem thread graph)
+include_directories(${BOOST_INCLUDE_DIRS})
+find_package(Graphviz REQUIRED)
 
+qt_wrap_ui(mainwindow mainwindow.ui)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
         mainwindow.h
         mainwindow.ui
+        graph/private/QGVNodePrivate.h
+        graph/private/QGVNodePrivate.cpp
+        graph/private/QGVCore.h
+        graph/private/QGVCore.cpp
+        graph/private/QGVEdgePrivate.h
+        graph/private/QGVEdgePrivate.cpp
+        graph/private/QGVGraphPrivate.h
+        graph/private/QGVGraphPrivate.cpp
+        graph/private/QGVGvcPrivate.h
+        graph/private/QGVGvcPrivate.cpp
+        graph/QGVEdge.h
+        graph/QGVEdge.cpp
+        graph/qgv.h
+        graph/QGVScene.h
+        graph/QGVScene.cpp
+        graph/QGVNode.h
+        graph/QGVNode.cpp
+        graph/QGVSubGraph.h
+        graph/QGVSubGraph.cpp
+        QGraphicsViewEc.cpp
+        QGraphicsViewEc.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
@@ -44,7 +70,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets)
+target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets cgraph gvc)
 
 set_target_properties(MultiGraphViz PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
