@@ -18,6 +18,7 @@ find_package(Boost REQUIRED regex date_time system filesystem thread graph)
 include_directories(${BOOST_INCLUDE_DIRS})
 find_package(Graphviz REQUIRED)
 
+qt_wrap_ui(mainwindow mainwindow.ui)
 set(PROJECT_SOURCES
         main.cpp
         mainwindow.cpp
@@ -42,6 +43,8 @@ set(PROJECT_SOURCES
         graph/QGVNode.cpp
         graph/QGVSubGraph.h
         graph/QGVSubGraph.cpp
+        QGraphicsViewEc.cpp
+        QGraphicsViewEc.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
