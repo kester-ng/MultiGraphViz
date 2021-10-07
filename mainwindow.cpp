@@ -6,6 +6,7 @@
 #include "graph/QGVEdge.h"
 #include "graph/QGVSubGraph.h"
 #include <QMessageBox>
+#include <QtWidgets>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -17,7 +18,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(_scene);
 
     connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
-    connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));
+    connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));  
 }
 
 MainWindow::~MainWindow()
@@ -121,3 +122,36 @@ void MainWindow::nodeDoubleClick(QGVNode *node)
 {
     QMessageBox::information(this, tr("Node double clicked"), tr("Node %1").arg(node->label()));
 }
+
+// Simple load from file function.
+// TODO Integrate with graph viz algo code.
+void MainWindow::loadFromFile()
+{
+    QString fileName = QFileDialog::getOpenFileName(this, tr("Open Edge List"), "", tr("Edge List (*.abk);;All Files (*)"));
+    if (fileName.isEmpty())
+        return;
+    else {
+        QFile file(fileName);
+
+        if (!file.open(QIODevice::ReadOnly)) {
+            QMessageBox::information(this, tr("Unable to open file"),
+                file.errorString());
+            return;
+        }
+
+        QDataStream in(&file);
+        in.setVersion(QDataStream::Qt_4_5);
+    }
+}
+
+void MainWindow::on_actionLoad_triggered()
+{
+    loadFromFile();
+}
+
+
+void MainWindow::on_actionQuit_triggered()
+{
+    QApplication::quit();
+}
+
