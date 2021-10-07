@@ -3,6 +3,15 @@
 
 #include <QMainWindow>
 #include "graph/QGVScene.h"
+#include <QWidget>
+#include <QMap>
+
+QT_BEGIN_NAMESPACE
+class QPushButton;
+class QLabel;
+class QLineEdit;
+class QTextEdit;
+QT_END_NAMESPACE
 
 namespace Ui {
 class MainWindow;
@@ -17,13 +26,19 @@ public:
     ~MainWindow();
     void drawGraph();
 
+public slots:
+    void loadFromFile();
+
 private slots:
     void nodeContextMenu(QGVNode* node);
     void nodeDoubleClick(QGVNode* node);
 
+    void on_actionLoad_triggered();
+
 private:
     Ui::MainWindow *ui;
-    QGVScene *_scene;
+    QGVScene *_scene;  
+    QPushButton *loadButton;
 };
 
 #endif // MAINWINDOW_H
