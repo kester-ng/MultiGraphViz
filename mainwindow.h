@@ -34,6 +34,7 @@ private slots:
     void nodeDoubleClick(QGVNode* node);
 
     void on_actionLoad_triggered();
+    void on_actionQuit_triggered();
 
 private:
     Ui::MainWindow *ui;
