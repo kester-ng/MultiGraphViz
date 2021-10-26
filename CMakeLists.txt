@@ -18,6 +18,16 @@ find_package(Boost REQUIRED regex date_time system filesystem thread graph)
 include_directories(${BOOST_INCLUDE_DIRS})
 find_package(Graphviz REQUIRED)
 
+find_package(OpenMP REQUIRED)
+if(NOT TARGET OpenMP::OpenMP_CXX)
+    add_library(OpenMP_TARGET INTERFACE)
+    add_library(OpenMP::OpenMP_CXX ALIAS OpenMP_TARGET)
+    target_compile_options(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
+    find_package(Threads REQUIRED)
+    target_link_libraries(OpenMP_TARGET INTERFACE Threads::Threads)
+    target_link_libraries(OpenMP_TARGET INTERFACE ${OpenMP_CXX_FLAGS})
+endif()
+
 qt_wrap_ui(mainwindow mainwindow.ui)
 set(PROJECT_SOURCES
         main.cpp
@@ -43,6 +53,14 @@ set(PROJECT_SOURCES
         graph/QGVNode.cpp
         graph/QGVSubGraph.h
         graph/QGVSubGraph.cpp
+        louvain/graph.h
+        louvain/graph.cpp
+        louvain/graph_binary.h
+        louvain/graph_binary.cpp
+        louvain/community.h
+        louvain/community.cpp
+        louvain/main_community.cpp
+        louvain/main_convert.cpp
         QGraphicsViewEc.cpp
         QGraphicsViewEc.h
 )
@@ -70,7 +88,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets cgraph gvc)
+target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets cgraph gvc OpenMP::OpenMP_CXX)
 
 set_target_properties(MultiGraphViz PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
