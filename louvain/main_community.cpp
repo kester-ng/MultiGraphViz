@@ -1,3 +1,4 @@
+/*
 #include <stdlib.h>
 #include <cstring>
 #include <math.h>
@@ -209,6 +210,7 @@ main(int argc, char **argv) {
 }
 */
 
+/*
 vector<vector<int>>& scc(Graph &G,vector<vector<int>> &SCCG){
     int vnums = G.nb_nodes;
     vector<int> DFN(vnums,0), q(vnums, 0), LOW(vnums,0), st(vnums,0), viter(vnums,0), id(vnums,0);
@@ -409,4 +411,4 @@ void write_partition(const string& hiename, const string& mapname, const string 
     }
     mapofs.close();
     hierofs.close();
-}
+}*/

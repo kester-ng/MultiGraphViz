@@ -1,13 +1,13 @@
 #include <fstream>
 #include "graph_binary.h"
 
-Graph::Graph() {
+GraphBinary::GraphBinary() {
     nb_nodes = 0;
     nb_links = 0;
     total_weight = 0;
 }
 
-Graph::Graph(Graph& orginG, vector<int> &nodes){
+GraphBinary::GraphBinary(GraphBinary& orginG, vector<int> &nodes){
     nb_nodes = nodes.size();
     int oldsize = orginG.nb_nodes;
     // map orginal node id to new node id
@@ -107,7 +107,7 @@ Graph::Graph(Graph& orginG, vector<int> &nodes){
 
 }
 
-Graph::Graph(char *filename, char *filename_w, int type) {
+GraphBinary::GraphBinary(char *filename, char *filename_w, int type) {
     ifstream finput;
     finput.open(filename, fstream::in | fstream::binary);
 
@@ -141,7 +141,7 @@ Graph::Graph(char *filename, char *filename_w, int type) {
     }
 }
 
-Graph::Graph(int n, int m, double t, int *d, int *l, float *w) {
+GraphBinary::GraphBinary(int n, int m, double t, int *d, int *l, float *w) {
 /*  nb_nodes     = n;
   nb_links     = m;
   total_weight = t;
@@ -152,7 +152,7 @@ Graph::Graph(int n, int m, double t, int *d, int *l, float *w) {
 
 
 void
-Graph::display() {
+GraphBinary::display() {
     for (int node = 0; node < nb_nodes; node++) {
         pair<vector<int>::iterator, vector<float>::iterator> p = neighbors(node);
         cout << node << ":";
@@ -169,7 +169,7 @@ Graph::display() {
 }
 
 void
-Graph::display_reverse() {
+GraphBinary::display_reverse() {
     for (int node = 0; node < nb_nodes; node++) {
         pair<vector<int>::iterator, vector<float>::iterator> p = neighbors(node);
         for (int i = 0; i < nb_neighbors(node); i++) {
@@ -185,7 +185,7 @@ Graph::display_reverse() {
 
 
 bool
-Graph::check_symmetry() {
+GraphBinary::check_symmetry() {
     int error = 0;
     for (int node = 0; node < nb_nodes; node++) {
         pair<vector<int>::iterator, vector<float>::iterator> p = neighbors(node);
@@ -211,7 +211,7 @@ Graph::check_symmetry() {
 
 
 void
-Graph::display_binary(char *outfile) {
+GraphBinary::display_binary(char *outfile) {
     ofstream foutput;
     foutput.open(outfile, fstream::out | fstream::binary);
 

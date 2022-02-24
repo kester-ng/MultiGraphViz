@@ -7,7 +7,7 @@ using namespace std;
 
 
 Community::Community(char *filename, char *filename_w, int type, int nbp, double minm, int nthread) {
-    g = Graph(filename, filename_w, type);
+    g = GraphBinary(filename, filename_w, type);
     size = g.nb_nodes;
     thread_num = nthread;
     neigh_map.resize(thread_num);
@@ -44,7 +44,7 @@ Community::Community(char *filename, char *filename_w, int type, int nbp, double
 }
 
 
-Community::Community(Graph gc, int nbp, double minm, int nthread, int chunk) {
+Community::Community(GraphBinary gc, int nbp, double minm, int nthread, int chunk) {
     g = gc;
     size = g.nb_nodes;
     thread_num = nthread;
@@ -171,7 +171,7 @@ Community::display_partition() {
         cout << i << " " << renumber[n2c[i]] << endl;
 }
 
-Graph
+GraphBinary
 Community::partition2graph_binary() {
     // Renumber communities
     vector<int> renumber(size, -1);
@@ -191,7 +191,7 @@ Community::partition2graph_binary() {
     }
 
     // Compute weighted graph
-    Graph g2;
+    GraphBinary g2;
     g2.nb_nodes = comm_nodes.size();
     g2.degrees.resize(comm_nodes.size());
 
@@ -231,7 +231,7 @@ Community::partition2graph_binary() {
 }
 
 
-Graph
+GraphBinary
 Community::partition2graph_binary(vector<vector<int>> &comm_nodes) {
     // Renumber communities
     vector<int> renumber(size, -1);
@@ -251,7 +251,7 @@ Community::partition2graph_binary(vector<vector<int>> &comm_nodes) {
     }
 
     // Compute weighted graph
-    Graph g2;
+    GraphBinary g2;
     g2.nb_nodes = comm_nodes.size();
     g2.degrees.resize(comm_nodes.size());
     int comm_deg = comm_nodes.size();

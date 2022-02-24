@@ -1,5 +1,6 @@
 
 #include "graph.h"
+#include "main_convert.h"
 
 using namespace std;
 
@@ -22,12 +23,12 @@ inline usage(char *prog_name, const char *more) {
 
 void
 inline parse_args(int argc, char **argv) {
-  for (int i = 1; i < argc; i++) {
+  for (int i = 0; i < argc; i++) {
     if(argv[i][0] == '-') {
       switch(argv[i][1]) {
       case 'i':
     if (i==argc-1)
-      usage(argv[0], "Infile missing\n");
+      usage(argv[0], "Infile missing really\n");
     infile = argv[i+1];
     i++;
     break;
@@ -49,25 +50,26 @@ inline parse_args(int argc, char **argv) {
     usage(argv[0], "Unknown option\n");
       }
     } else {
-      usage(argv[0], "More than one filename\n");
+      // usage(argv[0], "More than one filename\n");
     }
   }
-  if (infile==NULL || outfile==NULL)
-    usage(argv[0], "In or outfile missing\n");
+  if (infile==NULL)
+      usage(argv[0], "In file is missing\n");
+
+  if (outfile==NULL)
+      usage(argv[0], "Out file is missing\n");
 }
 
-/* TODO Remove main and add portable function
 int
-main(int argc, char **argv) {
+convert_edgelist_to_binary(int argc, char **argv) {
   parse_args(argc, argv);
 
   Graph g(infile, type);
-
   g.clean(type);
 
   if (do_renumber)
     g.renumber(type);
 
   g.display_binary(outfile, outfile_w, type);
-
-}*/
+  return 0;
+}

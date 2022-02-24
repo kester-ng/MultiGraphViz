@@ -1,5 +1,5 @@
-#ifndef GRAPH_H
-#define GRAPH_H
+#ifndef GRAPH_BINARY_H
+#define GRAPH_BINARY_H
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -17,7 +17,7 @@
 
 using namespace std;
 
-class Graph {
+class GraphBinary {
  public:
   int nb_nodes;
   long nb_links;
@@ -28,13 +28,13 @@ class Graph {
   vector<float> weights;
     vector<int> old2new;
     vector<int> new2old;
-  Graph();
+  GraphBinary();
 
-  Graph(char *filename, char *filename_w, int type);
+  GraphBinary(char *filename, char *filename_w, int type);
 
-  Graph(int nb_nodes, int nb_links, double total_weight, int *degrees, int *links, float *weights);
+  GraphBinary(int nb_nodes, int nb_links, double total_weight, int *degrees, int *links, float *weights);
 
-  Graph(Graph& orginG, vector<int> &nodes);
+  GraphBinary(GraphBinary& orginG, vector<int> &nodes);
 
   void display(void);
   void display_reverse(void);
@@ -60,7 +60,7 @@ class Graph {
 
 
 inline int
-Graph::nb_neighbors(int node) {
+GraphBinary::nb_neighbors(int node) {
   assert(node>=0 && node<nb_nodes);
 
   if (node==0)
@@ -70,7 +70,7 @@ Graph::nb_neighbors(int node) {
 }
 
 inline double
-Graph::nb_selfloops(int node) {
+GraphBinary::nb_selfloops(int node) {
   assert(node>=0 && node<nb_nodes);
 
   pair<vector<int>::iterator, vector<float>::iterator > p = neighbors(node);
@@ -86,7 +86,7 @@ Graph::nb_selfloops(int node) {
 }
 
 inline double
-Graph::weighted_degree(int node) {
+GraphBinary::weighted_degree(int node) {
   assert(node>=0 && node<nb_nodes);
 
   if (weights.size()==0)
@@ -102,7 +102,7 @@ Graph::weighted_degree(int node) {
 }
 
 inline double
-Graph::weighted_degree(vector<int> &community) {
+GraphBinary::weighted_degree(vector<int> &community) {
     double weight = 0;
     for(int node:community)
         weight += weighted_degree(node);
@@ -110,7 +110,7 @@ Graph::weighted_degree(vector<int> &community) {
 }
 
 inline pair<vector<int>::iterator, vector<float>::iterator >
-Graph::neighbors(int node) {
+GraphBinary::neighbors(int node) {
   assert(node>=0 && node<nb_nodes);
 
   if (node==0)
@@ -122,4 +122,4 @@ Graph::neighbors(int node) {
 }
 
 
-#endif // GRAPH_H
+#endif // GRAPH_BINARY_H

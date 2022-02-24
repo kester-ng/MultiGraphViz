@@ -7,6 +7,8 @@
 #include "graph/QGVSubGraph.h"
 #include <QMessageBox>
 #include <QtWidgets>
+#include "louvain/main_convert.h"
+#include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -44,7 +46,7 @@ void MainWindow::drawGraph()
     //_scene->setGraphAttribute("concentrate", "true"); //Error !
     _scene->setGraphAttribute("nodesep", "0.4");
 
-    _scene->setNodeAttribute("shape", "box");
+    _scene->setNodeAttribute("shape", "circle");
     _scene->setNodeAttribute("style", "filled");
     _scene->setNodeAttribute("fillcolor", "white");
     _scene->setNodeAttribute("height", "1.2");
@@ -52,35 +54,36 @@ void MainWindow::drawGraph()
     //_scene->setEdgeAttribute("dir", "both");
 
     //Add some nodes
-    QGVNode *node1 = _scene->addNode("BOX");
+    QGVNode *node1 = _scene->addNode("Node 1");
     node1->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node2 = _scene->addNode("SERVER0");
+    QGVNode *node2 = _scene->addNode("Node 2");
     node2->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node3 = _scene->addNode("SERVER1");
+    QGVNode *node3 = _scene->addNode("Node 3");
     node3->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node4 = _scene->addNode("USER");
+    QGVNode *node4 = _scene->addNode("Node 4");
     node4->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node5 = _scene->addNode("SWITCH");
+    QGVNode *node5 = _scene->addNode("Node 5");
     node5->setIcon(QImage(":/icons/cat.jpeg"));
 
     //Add some edges
     QGVEdge *edgeTest = _scene->addEdge(node1, node2, "TTL");
     edgeTest->setAttribute("color", "red");
-    _scene->addEdge(node1, node2, "SERIAL");
-    _scene->addEdge(node1, node3, "RAZ")->setAttribute("color", "blue");
-    _scene->addEdge(node2, node3, "SECU");
+    _scene->addEdge(node1, node2, "Edge 1");
+    _scene->addEdge(node1, node3, "Edge 2")->setAttribute("color", "blue");
+    _scene->addEdge(node2, node3, "Edge 3");
 
-    _scene->addEdge(node2, node4, "STATUS")->setAttribute("color", "red");
+    _scene->addEdge(node2, node4, "Edge 4")->setAttribute("color", "red");
 
-    _scene->addEdge(node4, node3, "ACK")->setAttribute("color", "red");
+    _scene->addEdge(node4, node3, "Edge 5")->setAttribute("color", "red");
 
-    _scene->addEdge(node4, node2, "TBIT");
-    _scene->addEdge(node4, node2, "ETH");
-    _scene->addEdge(node4, node2, "RS232");
+    _scene->addEdge(node4, node2, "Edge 6");
+    _scene->addEdge(node4, node2, "Edge 7");
+    _scene->addEdge(node4, node2, "Edge 8");
 
-    _scene->addEdge(node4, node5, "ETH1");
-    _scene->addEdge(node2, node5, "ETH2");
+    _scene->addEdge(node4, node5, "Edge 9");
+    _scene->addEdge(node2, node5, "Edge 10");
 
+    /*
     QGVSubGraph *sgraph = _scene->addSubGraph("SUB1");
     sgraph->setAttribute("label", "OFFICE");
 
@@ -90,12 +93,12 @@ void MainWindow::drawGraph()
     _scene->addEdge(snode1, snode2, "RT7");
 
     _scene->addEdge(node3, snode1, "GB8");
-    _scene->addEdge(node3, snode2, "TS9");
+    _scene->addEdge(node3, snode2, "TS9");*/
 
-
+    /*
     QGVSubGraph *ssgraph = sgraph->addSubGraph("SUB2");
     ssgraph->setAttribute("label", "DESK");
-    _scene->addEdge(snode1, ssgraph->addNode("PC0155"), "S10");
+    _scene->addEdge(snode1, ssgraph->addNode("PC0155"), "S10");*/
 
     //Layout scene
     _scene->applyLayout();
@@ -128,20 +131,13 @@ void MainWindow::nodeDoubleClick(QGVNode *node)
 void MainWindow::loadFromFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Edge List"), "", tr("Edge List (*.abk);;All Files (*)"));
-    if (fileName.isEmpty())
-        return;
-    else {
-        QFile file(fileName);
-
-        if (!file.open(QIODevice::ReadOnly)) {
-            QMessageBox::information(this, tr("Unable to open file"),
-                file.errorString());
-            return;
-        }
-
-        QDataStream in(&file);
-        in.setVersion(QDataStream::Qt_4_5);
-    }
+    std::string utf8_text = fileName.toUtf8().constData();
+    std::vector<std::string> args = {"-i", utf8_text, "-o", "/home/kester/test.bin"};
+    std::vector<char*> cstrings;
+    cstrings.reserve(args.size());
+    for(size_t i = 0; i < args.size(); ++i)
+        cstrings.push_back(const_cast<char*>(args[i].c_str()));
+    convert_edgelist_to_binary(4, &cstrings[0]);
 }
 
 void MainWindow::on_actionLoad_triggered()
