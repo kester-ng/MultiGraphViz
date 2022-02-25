@@ -17,7 +17,7 @@
 #include <array>
 #include <queue>
 #include <unordered_set>
-// #include "sparsehash/dense_hash_map" TODO Add sparse hash inside
+#include "sparsehash/dense_hash_map"
 #include "graph_binary.h"
 
 using namespace std;
