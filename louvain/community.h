@@ -21,7 +21,7 @@
 #include "graph_binary.h"
 
 using namespace std;
-// using google::dense_hash_map; TODO Add sparse hash inside
+using google::dense_hash_map;
 
 const int VectorDefaultSize=20;
 template <typename _T>

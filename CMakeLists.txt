@@ -62,6 +62,7 @@ set(PROJECT_SOURCES
         louvain/main_community.cpp
         louvain/main_convert.cpp
         louvain/main_convert.h
+        louvain/main_community.h
         QGraphicsViewEc.cpp
         QGraphicsViewEc.h
 )

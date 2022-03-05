@@ -1,4 +1,4 @@
-/*
+
 #include <stdlib.h>
 #include <cstring>
 #include <math.h>
@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <boost/property_tree/ptree.hpp>
 #include <boost/property_tree/json_parser.hpp>
+#include "main_community.h"
 
 #include "graph_binary.h"
 #include "community.h"
@@ -24,7 +25,7 @@ namespace bp = boost::property_tree;
 char* filename = NULL;
 char *filename_w = NULL;
 char *filename_part = NULL;
-int type = UNWEIGHTED;
+int graph_type = UNWEIGHTED;
 int algorithm = -1;
 int fid = -1;
 map<int, string> filelist = {{6, "amazon"},{7, "youtube"},
@@ -52,7 +53,7 @@ double time_by(double &start);
 double louvain(Community &c);
 vector<vector<vector<int>>>& louvainPlus(Community &c,vector<vector<vector<int>>> &partit);
 void write_partition(const string& hiename, const string& mapname, const string &rootname);
-vector<vector<int>>& scc(Graph &G,vector<vector<int>> &SCCG);
+vector<vector<int>>& scc(GraphBinary &G,vector<vector<int>> &SCCG);
 
 double time_by(double &start){
     return (omp_get_wtime()-start);
@@ -87,7 +88,7 @@ parse_args(int argc, char **argv) {
     if (argc < 2)
         usage(argv[0], "Bad arguments number\n");
 
-    for (int i = 1; i < argc; i++) {
+    for (int i = 0; i < argc; i++) {
         if (argv[i][0] == '-') {
             switch (argv[i][1]) {
                 case 'a': // input arg to select different algorithm: louvain or louvainPlus
@@ -106,6 +107,10 @@ parse_args(int argc, char **argv) {
                     thread_num = atoi(argv[i + 1]);
                     i++;
                     break;
+                case 'o':
+                    output = true;
+                    i++;
+                    break;
                 case 'v':
                     verbose = true;
                     break;
@@ -113,6 +118,7 @@ parse_args(int argc, char **argv) {
                     usage(argv[0], "Unknown option\n");
             }
         } else {
+            cerr << argv[i];
             usage(argv[0], "Unknown option\n");
         }
     }
@@ -126,29 +132,28 @@ display_time(const char *str) {
 }
 
 
-/* TODO Replace this with a function that can be used.
-int
-main(int argc, char **argv) {
+void
+louvain_algorithm(int argc, char **argv) {
 //    srand(time(NULL) + getpid());
 //    srand(1);
     parse_args(argc, argv);
     double starttime;
 
-    string strFname = rootpath+"dataset/"+filelist[fid] +".bin";
+    string strFname = "/home/kester/test.bin"; // hard coded for now
     filename = &strFname[0];
     cerr << filename << endl;
 
     if (algorithm==LOUVAIN){
-        Community c(filename, filename_w, type, -1, precision,1);
+        Community c(filename, filename_w, graph_type, -1, precision,1);
         starttime = omp_get_wtime();
         louvain(c);
     }
     else if(algorithm==LOUVAINMERGE){
-        Graph g(filename, filename_w, type);
+        GraphBinary g(filename, filename_w, graph_type);
         starttime = omp_get_wtime();
         vector<vector<int>> sccs;
         scc(g,sccs);
-        cerr << "SCC time: "<< time_by(starttime) << endl;
+       //  cerr << "SCC time: "<< time_by(starttime) << enhdl;
 //        int chunks[] = {1};
 //        int threads[] = {64,32,16,8,4,2,1};
         int threads[] = {1};
@@ -174,7 +179,7 @@ main(int argc, char **argv) {
                         idx = i;
                     }
                 }
-                Graph subg(g,sccs[idx]);
+                GraphBinary subg(g,sccs[idx]);
                 double start = omp_get_wtime();
                 Community c(subg, -1, precision,thread_num,chunk_size);
                 total_time+=time_by(start);
@@ -191,13 +196,15 @@ main(int argc, char **argv) {
                 partitions.emplace_back(partit);
             }
             cout <<total_time<<endl;
+            cout << thread_num;
             if (thread_num==1){
-                if (output){
-                    string hiename = rootpath+"louvain/hierachy-output/"+filelist[fid] +".dat";
-                    string rootname = rootpath+"louvain/hierachy-output/"+filelist[fid] +".root";
-                    string mapname = rootpath+"louvain/mapping-output/"+filelist[fid] +".dat";
-                    write_partition(hiename, mapname, rootname);
-                }
+                // /home/kester/
+                string hiename = std::string("/home/kester/hierarchy-output/") + std::string("hiename.dat");
+                string rootname = std::string("/home/kester/hierarchy-output/") + std::string("rootname.root");
+                string mapname = std::string("/home/kester/mapping-output/") + std::string("mapname.dat");
+                write_partition(hiename, mapname, rootname);
+            } else {
+                cerr << "WHY IS THIS HAPPENING?";
             }
             partitions.clear();
             smallpartition.clear();
@@ -208,10 +215,8 @@ main(int argc, char **argv) {
         exit(-1);
     }
 }
-*/
 
-/*
-vector<vector<int>>& scc(Graph &G,vector<vector<int>> &SCCG){
+vector<vector<int>>& scc(GraphBinary &G,vector<vector<int>> &SCCG){
     int vnums = G.nb_nodes;
     vector<int> DFN(vnums,0), q(vnums, 0), LOW(vnums,0), st(vnums,0), viter(vnums,0), id(vnums,0);
     vector<bool> visit(vnums, false);
@@ -264,7 +269,7 @@ vector<vector<int>>& scc(Graph &G,vector<vector<int>> &SCCG){
 
 vector<vector<vector<int>>>& louvainPlus(Community &c,vector<vector<vector<int>>> &partit){
 
-    Graph g;
+    GraphBinary g;
     double mod = c.modularity(), new_mod;
     int level = 0;
 
@@ -318,7 +323,7 @@ vector<vector<vector<int>>>& louvainPlus(Community &c,vector<vector<vector<int>>
     return partit;
 }
 double louvain(Community &c) {
-    Graph g;
+    GraphBinary g;
     bool improvement = true;
     double mod = c.modularity(), new_mod;
     int level = 0;
@@ -411,4 +416,4 @@ void write_partition(const string& hiename, const string& mapname, const string 
     }
     mapofs.close();
     hierofs.close();
-}*/
+}
