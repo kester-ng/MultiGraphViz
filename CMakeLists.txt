@@ -11,12 +11,32 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules )
-
 find_package(QT NAMES Qt6 Qt5 COMPONENTS Widgets REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets REQUIRED)
-find_package(Boost REQUIRED regex date_time system filesystem thread graph)
-include_directories(${BOOST_INCLUDE_DIRS})
+find_package(Boost REQUIRED COMPONENTS regex date_time system filesystem thread graph serialization)
+include_directories(${Boost_INCLUDE_DIRS})
+
 find_package(Graphviz REQUIRED)
+
+set ( EIGEN3_FOUND 1 )
+set ( EIGEN3_USE_FILE     "${CMAKE_CURRENT_LIST_DIR}/UseEigen3.cmake" )
+
+set ( EIGEN3_DEFINITIONS  "" )
+set ( EIGEN3_INCLUDE_DIR  "/usr/include/eigen3" )
+set ( EIGEN3_INCLUDE_DIRS "/usr/include/eigen3" )
+set ( EIGEN3_ROOT_DIR     "/usr" )
+
+set ( EIGEN3_VERSION_STRING "3.2.92" )
+set ( EIGEN3_VERSION_MAJOR  "3" )
+set ( EIGEN3_VERSION_MINOR  "2" )
+set ( EIGEN3_VERSION_PATCH  "92" )
+
+add_definitions     ( ${EIGEN3_DEFINITIONS} )
+include_directories ( ${EIGEN3_INCLUDE_DIRS} )
+
+find_package(Eigen3 REQUIRED)
+MESSAGE( [Main] " EIGEN3_INCLUDE_DIRS = ${EIGEN3_INCLUDE_DIRS}")
+# EIGEN3_INCLUDE_DIRS = /usr/include/eigen3
 
 find_package(OpenMP REQUIRED)
 if(NOT TARGET OpenMP::OpenMP_CXX)
@@ -63,6 +83,10 @@ set(PROJECT_SOURCES
         louvain/main_convert.cpp
         louvain/main_convert.h
         louvain/main_community.h
+        dnppr/algo.h
+        dnppr/graph.h
+        dnppr/lib.h
+        dnppr/dnppr.cpp
         QGraphicsViewEc.cpp
         QGraphicsViewEc.h
 )
@@ -90,7 +114,7 @@ else()
     endif()
 endif()
 
-target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets cgraph gvc OpenMP::OpenMP_CXX)
+target_link_libraries(MultiGraphViz PRIVATE Qt${QT_VERSION_MAJOR}::Widgets cgraph gvc OpenMP::OpenMP_CXX ${Boost_LIBRARIES})
 
 set_target_properties(MultiGraphViz PROPERTIES
     MACOSX_BUNDLE_GUI_IDENTIFIER my.example.com
