@@ -17,11 +17,11 @@
 #include <array>
 #include <queue>
 #include <unordered_set>
-// #include "sparsehash/dense_hash_map" TODO Add sparse hash inside
+#include "sparsehash/dense_hash_map"
 #include "graph_binary.h"
 
 using namespace std;
-// using google::dense_hash_map; TODO Add sparse hash inside
+using google::dense_hash_map;
 
 const int VectorDefaultSize=20;
 template <typename _T>
@@ -379,7 +379,7 @@ public:
     vector<int> neigh_last;
     int thread_num;
     int chunksize;
-    Graph g; // network to compute communities for
+    GraphBinary g; // network to compute communities for
     int size; // nummber of nodes in the network and size of all vectors
 
     vector<int> n2c; // community to which each node belongs
@@ -401,7 +401,7 @@ public:
     Community(char *filename, char *filename_w, int type, int nb_pass, double min_modularity, int thread_num);
 
     // copy graph
-    Community(Graph g, int nb_pass, double min_modularity, int thread_num,int chunk);
+    Community(GraphBinary g, int nb_pass, double min_modularity, int thread_num,int chunk);
 
     // initiliazes the partition with something else than all nodes alone
 //    void init_partition(char *filename_part);
@@ -443,9 +443,9 @@ public:
     void display_partition();
 
     // generates the binary graph of communities as computed by one_level
-    Graph partition2graph_binary_old(vector<vector<int>> &comm_nodes);
-    Graph partition2graph_binary(vector<vector<int>> &comm_nodes);
-    Graph partition2graph_binary();
+    GraphBinary partition2graph_binary_old(vector<vector<int>> &comm_nodes);
+    GraphBinary partition2graph_binary(vector<vector<int>> &comm_nodes);
+    GraphBinary partition2graph_binary();
     // compute communities of the graph for one level
     // return true if some nodes have been moved
     bool one_level();
