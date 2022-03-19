@@ -47,7 +47,8 @@ public:
     }
 
     void init_nm() {
-        string attribute_file = data_folder + FILECONNECT + "attribute.txt";
+        // string attribute_file = data_folder + FILECONNECT + "attribute.txt";
+        string attribute_file = "/home/kester/amazon_attribute.txt"; // attribute file?
         ifstream attr(attribute_file);
         string line1, line2;
         char c;
@@ -69,7 +70,7 @@ public:
         deg.resize(n);
         iota (begin(nodes), end(nodes), 0);
         g = vector<vector<int>>(n, vector<int>());
-        string graph_file = data_folder+".txt";
+        string graph_file = "/home/kester/amazon.txt"; // the original file
         FILE *fin = fopen(graph_file.c_str(), "r");
         int t1, t2;
         while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {

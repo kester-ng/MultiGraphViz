@@ -9,6 +9,7 @@
 #include <QtWidgets>
 #include "louvain/main_convert.h"
 #include "louvain/main_community.h"
+#include "dnppr/dnppr.h"
 #include <iostream>
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -138,7 +139,7 @@ void MainWindow::loadFromFile()
     cstrings.reserve(args.size());
     for(size_t i = 0; i < args.size(); ++i)
         cstrings.push_back(const_cast<char*>(args[i].c_str()));
-    convert_edgelist_to_binary(4, &cstrings[0]);
+    // convert_edgelist_to_binary(4, &cstrings[0]);
 
     // Now we use louvain algorithm to get clustering information
     std::vector<std::string> louvain_args = {"-f", "6", "-a", "1", "-k", "25", "-v"};
@@ -146,7 +147,16 @@ void MainWindow::loadFromFile()
     louvain.reserve(louvain_args.size());
     for (size_t i = 0; i < louvain_args.size(); ++i)
         louvain.push_back(const_cast<char*>(louvain_args[i].c_str()));
-    louvain_algorithm(louvain_args.size(), &louvain[0]);
+    // louvain_algorithm(louvain_args.size(), &louvain[0]);
+
+    // now it is the dnppr algorithm
+    std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0"}; // for now we only support taupush
+    std::vector<char*> dnppr_cstrings;
+    dnppr_cstrings.reserve(dnppr_args.size());
+    for (size_t i = 0; i < dnppr_args.size(); i++)
+        dnppr_cstrings.push_back(const_cast<char*>(dnppr_args[i].c_str()));
+    // invoke method
+    dnppr(dnppr_args.size(), &dnppr_cstrings[0]);
 }
 
 void MainWindow::on_actionLoad_triggered()

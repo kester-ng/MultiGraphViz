@@ -15,8 +15,7 @@ void param_config(string &alg){
     else{exit(-1);}
 }
 
-/*
-int main(int argc,char *argv[]) {
+int dnppr(int argc, char *argv[]) {
     unordered_map<string, string> param;
     parameter(argc, argv, param);
     int fileno;
@@ -26,6 +25,7 @@ int main(int argc,char *argv[]) {
     int random_query;
     int full_mode;
     int k;
+
     fileno = stoi(param.count("-f")?param["-f"]:"2");
     buildflag = stoi(param.count("-build")?param["-build"]:"0");
     verboses = stoi(param.count("-verbose")?param["-verbose"]:"0");
@@ -35,12 +35,12 @@ int main(int argc,char *argv[]) {
     thread_nums = 1; // multi-threading is not support currently
     alg = param.count("-alg")?param["-alg"]:"taupush";
     random_query = stoi(param.count("-random")?param["-random"]:"1");
-    embed_on = stoi(param.count("-embed")?param["-embed"]:"0");
+    embed_on = stoi(param.count("-embed")?param["-embed"]:"1");
     full_mode = stoi(param.count("-full")?param["-full"]:"0");
     param_config(alg);
     int seed = stoi(param.count("-seed")?param["-seed"]:"2");
     srand(seed);
-    string datapath = "../dataset/"+filelist[fileno];
+    string datapath = "/home/kester/";
 
 //    if (full_mode){
 //        vector<int> ks = {25,50,100,500,1000};
@@ -52,34 +52,34 @@ int main(int argc,char *argv[]) {
 //        return 0;
 //    }
 
-    if (verboses)
-        cout << "dataset: "<<filelist[fileno]<<endl;
-    hiename = "../louvain/hierachy-output/"+filelist[fileno] +"_"+to_string(k)+".dat";
-    mapname = "../louvain/mapping-output/"+filelist[fileno] +"_"+to_string(k)+".dat";
-    rootname = "../louvain/hierachy-output/"+filelist[fileno] +"_"+to_string(k)+".root";
-    storepath = "../"+filelist[fileno]+"_idx/"+filelist[fileno]+"ds250" +"_"+to_string(k);
+    // if (verboses)
+       // cout << "dataset: "<<filelist[fileno]<<endl;
+
+    hiename = std::string("/home/kester/hierarchy-output/") + std::string("hiename.dat");
+    rootname = std::string("/home/kester/hierarchy-output/") + std::string("rootname.root");
+    mapname = std::string("/home/kester/mapping-output/") + std::string("mapname.dat");
+    // storepath = "../"+filelist[fileno]+"_idx/"+filelist[fileno]+"ds250" +"_"+to_string(k);
+    storepath = std::string("/home/kester/actual_idx/inputds250") + "_" + to_string(k);
 
     graph = Graph(datapath,alpha,k);
     int max_level = load_multilevel();
     graph.max_level = max_level;
 
-
-    prpath = "../pr_idx/"+filelist[fileno]+".dnpr";
+    prpath = std::string("/home/kester/pr_idx/") + "amazon.dnpr";
     if ((!buildflag && isFPSN) or (isBPSN)){
-        prpath = "../pr_idx/"+filelist[fileno]+".dnpr";
+        prpath = std::string("/home/kester/pr_idx/") + "amazon.dnpr";
         deserialize_pr();
     }
-
     if (buildflag){
         if (isBPSN)
-            rwpath = "../bwd_idx/"+filelist[fileno];
+            rwpath = std::string("/home/kester/bwd_idx/") + "output";
         if (isRWIdx)
-            rwpath = "../rwidx/"+filelist[fileno]+"randwalks"+"_"+to_string(k);
+            rwpath = std::string("/home/kester/rwidx/") +"randwalks"+"_"+to_string(k);
 
 //        int threads[] = {64,32,16,8,4,2,1};
         int threads[] = {1};
         for(int each:threads) {
-            thread_nums = each < omp_get_max_thread() ? each : omp_get_max_thread();
+            thread_nums = each < omp_get_max_threads() ? each : omp_get_max_threads();
 
             if (isBPSN)
                 build_bwdpush();
@@ -92,16 +92,16 @@ int main(int argc,char *argv[]) {
     } else{
         // load rwidx
         if (isRWIdx){
-            rwpath = "../rwidx/"+filelist[fileno]+"randwalks"+"_"+alg+"_"+to_string(k);
+            rwpath = std::string("/home/kester/rwidx/") +"randwalks"+"_"+to_string(k);
             deserialize_idx();
         }
         if (isBPSN){
-            rwpath = "../bwd_idx/"+filelist[fileno];
+            rwpath = std::string("/home/kester/bwd_idx/") + "output";
             deserialize_bwd();
         }
         if (!random_query){
             if (!isFPSN){
-                prpath = "../pr_idx/"+filelist[fileno]+".dnpr";
+                prpath = std::string("/home/kester/pr_idx/") + "amazon.dnpr";
                 deserialize_pr();
             }
             top_k_hub_cluster(sample);
@@ -137,7 +137,5 @@ int main(int argc,char *argv[]) {
         }
 
     }
-
     return 0;
 }
-*/

@@ -87,6 +87,7 @@ set(PROJECT_SOURCES
         dnppr/graph.h
         dnppr/lib.h
         dnppr/dnppr.cpp
+        dnppr/dnppr.h
         QGraphicsViewEc.cpp
         QGraphicsViewEc.h
 )
