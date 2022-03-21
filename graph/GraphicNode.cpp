@@ -1,6 +1,7 @@
 // GraphicNode.cpp
 
 #include "GraphicNode.h"
+#include <iostream>
 
 GraphicNode::GraphicNode(qreal x, qreal y, qreal radius) {
     this->x = x;
@@ -11,34 +12,24 @@ GraphicNode::GraphicNode(qreal x, qreal y, qreal radius) {
 QRectF GraphicNode::boundingRect() const
 {
     // outer most edges
-    return QRectF(0,0,100,100); // edit with radius later
+    return QRectF(this->x,this->y,this->radius,this->radius); // edit with radius later
 }
 
 void GraphicNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
 {
     QRectF rect = boundingRect();
-
-    if(Pressed)
-    {
-        QPen pen(Qt::red, 3);
-        painter->setPen(pen);
-        painter->drawEllipse(rect);
-    }
-    else
-    {
-        QPen pen(Qt::black, 3);
-        painter->setPen(pen);
-        painter->drawRect(rect);
-    }
-
-    this->setX(this->x);
-    this->setY(this->y);
+    QPen pen(Qt::black, 3);
+    painter->setBrush(Qt::black);
+    // painter->setPen(pen);
+    painter->drawEllipse(rect);
+    // painter->fillRect(rect, QBrush(Qt::black));
 }
 
 void GraphicNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
 {
     Pressed = true;
     update();
+    // add zoom in logic soon
     QGraphicsItem::mousePressEvent(event);
 }
 

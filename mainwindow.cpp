@@ -23,8 +23,12 @@ MainWindow::MainWindow(QWidget *parent) :
     QGraphicsScene *scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
-    GraphicNode* node = new GraphicNode(20, 50, 5);
+    GraphicNode* node = new GraphicNode(20, 50, 10);
     scene->addItem(node);
+    GraphicNode* node1 = new GraphicNode(30, 80, 20);
+    GraphicNode* node2 = new GraphicNode(12, 100, 20);
+    scene->addItem(node1);
+    scene->addItem(node2);
 
     // connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
     // connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));
