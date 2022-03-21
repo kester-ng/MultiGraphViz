@@ -90,6 +90,8 @@ set(PROJECT_SOURCES
         dnppr/dnppr.h
         QGraphicsViewEc.cpp
         QGraphicsViewEc.h
+        graph/GraphicNode.cpp
+        graph/GraphicNode.h
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

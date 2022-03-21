@@ -5,6 +5,7 @@
 #include "graph/QGVNode.h"
 #include "graph/QGVEdge.h"
 #include "graph/QGVSubGraph.h"
+#include "graph/GraphicNode.h"
 #include <QMessageBox>
 #include <QtWidgets>
 #include "louvain/main_convert.h"
@@ -19,10 +20,14 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     _scene = new QGVScene("DEMO", this);
-    ui->graphicsView->setScene(_scene);
+    QGraphicsScene *scene = new QGraphicsScene(this);
+    ui->graphicsView->setScene(scene);
 
-    connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
-    connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));  
+    GraphicNode* node = new GraphicNode(20, 50, 5);
+    scene->addItem(node);
+
+    // connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
+    // connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));
 }
 
 MainWindow::~MainWindow()
@@ -41,6 +46,7 @@ void MainWindow::drawGraph()
     */
 
     //Configure scene attributes
+    /*
     _scene->setGraphAttribute("label", "DEMO");
 
     _scene->setGraphAttribute("splines", "ortho");
@@ -66,8 +72,9 @@ void MainWindow::drawGraph()
     node4->setIcon(QImage(":/icons/cat.jpeg"));
     QGVNode *node5 = _scene->addNode("Node 5");
     node5->setIcon(QImage(":/icons/cat.jpeg"));
-
+    */
     //Add some edges
+    /*
     QGVEdge *edgeTest = _scene->addEdge(node1, node2, "TTL");
     edgeTest->setAttribute("color", "red");
     _scene->addEdge(node1, node2, "Edge 1");
@@ -84,6 +91,7 @@ void MainWindow::drawGraph()
 
     _scene->addEdge(node4, node5, "Edge 9");
     _scene->addEdge(node2, node5, "Edge 10");
+    */
 
     /*
     QGVSubGraph *sgraph = _scene->addSubGraph("SUB1");
