@@ -13,6 +13,8 @@ using namespace boost;
 using namespace std;
 
 
+vector<double> radii;
+Coordinate2d positions;
 string hiename,mapname,rootname,storepath,rwpath,prpath;
 //vector<Bwdidx> offline_idx;
 //vector<vector<pair<int,double>>> ppr_idx;
@@ -1954,6 +1956,7 @@ void allpair_pprdeg_pr(const string &supernode, int level,
 
 
 void store_position(const string &supernode, const Coordinate2d &projections){
+    positions = projections;
     unsigned M = projections.rows();
     string prefix = storepath+supernode+"_"+alg;
     string datapath;
@@ -1967,6 +1970,7 @@ void store_position(const string &supernode, const Coordinate2d &projections){
     fout1.close();
 }
 void store_radius(const string &supernode, const vector<double> &r){
+    radii = r;
     unsigned M = r.size();
     string prefix = storepath+supernode+"_"+alg;
     string datapath;

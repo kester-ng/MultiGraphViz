@@ -1,6 +1,8 @@
 #ifndef DNPPR_H
 #define DNPPR_H
+#include <vector>
 
-int dnppr(int argc,char *argv[]);
+unsigned no_of_rows;
+std::vector<std::vector<double>> dnppr(int argc,char *argv[]);
 
 #endif // DNPPR_H

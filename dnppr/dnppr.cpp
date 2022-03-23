@@ -15,7 +15,16 @@ void param_config(string &alg){
     else{exit(-1);}
 }
 
-int dnppr(int argc, char *argv[]) {
+double** make_2d_array(int r, int c)
+{
+    double** arr = new double*[r];
+    for(int i = 0; i < r; i++)
+        arr[i] = new double[c];
+
+    return arr;
+}
+
+vector<vector<double>> dnppr(int argc, char *argv[]) {
     unordered_map<string, string> param;
     parameter(argc, argv, param);
     int fileno;
@@ -137,5 +146,17 @@ int dnppr(int argc, char *argv[]) {
         }
 
     }
-    return 0;
+    unsigned M = positions.rows();
+    vector<vector<double>> coordinates(M);
+    double * x = positions.data();
+    double * y = positions.data()+M;
+
+    for (int i = 0; i < M; i++) {
+        coordinates[i] = vector<double>(3); // x y and radius
+        coordinates[i][0] = x[i];
+        coordinates[i][1] = y[i];
+        coordinates[i][2] = radii[i];
+    }
+
+    return coordinates;
 }

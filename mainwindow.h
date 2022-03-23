@@ -39,6 +39,7 @@ private slots:
 private:
     Ui::MainWindow *ui;
     QGVScene *_scene;  
+    QGraphicsScene *scene;
     QPushButton *loadButton;
 };
 

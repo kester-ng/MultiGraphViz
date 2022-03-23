@@ -12,6 +12,11 @@
 #include "louvain/main_community.h"
 #include "dnppr/dnppr.h"
 #include <iostream>
+#include <fstream>
+#include <iterator>
+#include <vector>
+
+typedef unsigned char BYTE;
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -20,15 +25,21 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     _scene = new QGVScene("DEMO", this);
-    QGraphicsScene *scene = new QGraphicsScene(this);
+    scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
+    std::ifstream file("/home/kester/actual_idx/inputds250_25c0_l3_0_fpsn.y", std::ios::out | std::ios::binary);
+    file.unsetf(std::ios::skipws);
+    /*
     GraphicNode* node = new GraphicNode(20, 50, 10);
     scene->addItem(node);
     GraphicNode* node1 = new GraphicNode(30, 80, 20);
     GraphicNode* node2 = new GraphicNode(12, 100, 20);
     scene->addItem(node1);
     scene->addItem(node2);
+    */
+
+    // inputds250_25c0_l3_0_fpsn.r
 
     // connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
     // connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));
@@ -168,7 +179,14 @@ void MainWindow::loadFromFile()
     for (size_t i = 0; i < dnppr_args.size(); i++)
         dnppr_cstrings.push_back(const_cast<char*>(dnppr_args[i].c_str()));
     // invoke method
-    dnppr(dnppr_args.size(), &dnppr_cstrings[0]);
+    std::vector<std::vector<double>> coordinates = dnppr(dnppr_args.size(), &dnppr_cstrings[0]);
+
+    // plot graph
+    for (int i = 0; i < coordinates.size(); i++) {
+        GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2]);
+        scene->addItem(node);
+    }
+    // ui->graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
 void MainWindow::on_actionLoad_triggered()

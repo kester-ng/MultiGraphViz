@@ -12,7 +12,7 @@ GraphicNode::GraphicNode(qreal x, qreal y, qreal radius) {
 QRectF GraphicNode::boundingRect() const
 {
     // outer most edges
-    return QRectF(this->x,this->y,this->radius,this->radius); // edit with radius later
+    return QRectF(this->x,this->y,this->radius * 2,this->radius * 2); // edit with radius later
 }
 
 void GraphicNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget)
