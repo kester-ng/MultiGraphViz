@@ -74,9 +74,10 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     int max_level = load_multilevel();
     graph.max_level = max_level;
 
-    prpath = std::string("/home/kester/pr_idx/") + "amazon.dnpr";
+    prpath = std::string("/home/kester/pr_idx/") + "input.dnpr";
     if ((!buildflag && isFPSN) or (isBPSN)){
-        prpath = std::string("/home/kester/pr_idx/") + "amazon.dnpr";
+        prpath = std::string("/home/kester/pr_idx/") + "input.dnpr";
+        // build_dnpr();
         deserialize_pr();
     }
     if (buildflag){
@@ -131,7 +132,9 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
                 else{
                     path.emplace_back(hubcluster[i]);
                 }
-                interactive_visualize(path);
+                vector<string> test;
+                test.push_back("c0_l2_838");
+                interactive_visualize(test);
                 cerr <<timeElasped<<endl;
                 cout<<(timeElasped-embedTimeElapsed)<<endl;
                 totaldnpprtime += (timeElasped-embedTimeElapsed);
@@ -156,6 +159,12 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
         coordinates[i][0] = x[i];
         coordinates[i][1] = y[i];
         coordinates[i][2] = radii[i];
+        std::cerr << x[i];
+        std::cerr << " ";
+        std::cerr << y[i];
+        std::cerr << " ";
+        std::cerr << radii[i];
+        std:cerr << "\n";
     }
 
     return coordinates;

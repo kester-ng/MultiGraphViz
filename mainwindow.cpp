@@ -15,6 +15,8 @@
 #include <fstream>
 #include <iterator>
 #include <vector>
+#include <QStringList>
+#include <string>
 
 typedef unsigned char BYTE;
 
@@ -28,17 +30,20 @@ MainWindow::MainWindow(QWidget *parent) :
     scene = new QGraphicsScene(this);
     ui->graphicsView->setScene(scene);
 
+
+    /*
     std::ifstream file("/home/kester/actual_idx/inputds250_25c0_l3_0_fpsn.y", std::ios::out | std::ios::binary);
     file.unsetf(std::ios::skipws);
-    /*
-    GraphicNode* node = new GraphicNode(20, 50, 10);
+    GraphicNode* node = new GraphicNode(0, 20, 10);
     scene->addItem(node);
-    GraphicNode* node1 = new GraphicNode(30, 80, 20);
-    GraphicNode* node2 = new GraphicNode(12, 100, 20);
+    GraphicNode* node1 = new GraphicNode(200, 0, 10);
+    GraphicNode* node2 = new GraphicNode(0, 0, 10);
     scene->addItem(node1);
-    scene->addItem(node2);
+    // scene->addItem(node2);
+    QGraphicsLineItem* line = new QGraphicsLineItem();
+    line->setLine(10, 30, 210, 10);
+    scene->addItem(line);
     */
-
     // inputds250_25c0_l3_0_fpsn.r
 
     // connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
@@ -186,7 +191,36 @@ void MainWindow::loadFromFile()
         GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2]);
         scene->addItem(node);
     }
-    // ui->graphicsView->fitInView(scene->sceneRect(), Qt::KeepAspectRatio);
+
+    // std::system("python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=c0_l2_838");
+    std::string graph_file = "/home/kester/c0_l2_838-edge-list.txt";
+    FILE *fin = fopen(graph_file.c_str(), "r");
+    int t1, t2;
+    // 1 9, 8 14, 9 24
+    while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
+        if(t1 == t2) continue;
+        // plot edges
+        double x = coordinates[t1][0];
+        double y = coordinates[t1][1];
+        double radius = coordinates[t1][2];
+
+        double x2 = coordinates[t2][0];
+        double y2 = coordinates[t2][1];
+        double radius2 = coordinates[t2][2];
+        std::cerr << t1;
+        std:: cerr << " ";
+        std::cerr << t2;
+        std:: cerr<< " ";
+        std::cerr << x;
+        std::cerr << " ";
+        std::cerr << y;
+        std::cerr << "\n";
+
+        QGraphicsLineItem* line = new QGraphicsLineItem();
+        line->setLine(x + radius, y + radius, x2 + radius, y2 + radius);
+        scene->addItem(line);
+    }
+
 }
 
 void MainWindow::on_actionLoad_triggered()

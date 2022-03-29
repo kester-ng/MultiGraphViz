@@ -23,6 +23,9 @@ void GraphicNode::paint(QPainter *painter, const QStyleOptionGraphicsItem *optio
     // painter->setPen(pen);
     painter->drawEllipse(rect);
     // painter->fillRect(rect, QBrush(Qt::black));
+    // this->setX(this->x);
+    // this->setY(this->y);
+    // prepareGeometryChange();
 }
 
 void GraphicNode::mousePressEvent(QGraphicsSceneMouseEvent *event)
