@@ -17,6 +17,7 @@
 #include <vector>
 #include <QStringList>
 #include <string>
+#include "Graphics_view_zoom.h"
 
 typedef unsigned char BYTE;
 
@@ -28,9 +29,12 @@ MainWindow::MainWindow(QWidget *parent) :
 
     _scene = new QGVScene("DEMO", this);
     scene = new QGraphicsScene(this);
+
     ui->graphicsView->setScene(scene);
+    this->setWindowTitle("c0_l2_838");
 
-
+    Graphics_view_zoom* z = new Graphics_view_zoom(ui->graphicsView);
+    z->set_modifiers(Qt::NoModifier);
     /*
     std::ifstream file("/home/kester/actual_idx/inputds250_25c0_l3_0_fpsn.y", std::ios::out | std::ios::binary);
     file.unsetf(std::ios::skipws);
@@ -191,7 +195,6 @@ void MainWindow::loadFromFile()
         GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2]);
         scene->addItem(node);
     }
-
     // std::system("python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=c0_l2_838");
     std::string graph_file = "/home/kester/c0_l2_838-edge-list.txt";
     FILE *fin = fopen(graph_file.c_str(), "r");
@@ -217,7 +220,11 @@ void MainWindow::loadFromFile()
         std::cerr << "\n";
 
         QGraphicsLineItem* line = new QGraphicsLineItem();
+        QPen _Pen;
+        _Pen.setColor(Qt::black);
+        _Pen.setWidth(0.5);
         line->setLine(x + radius, y + radius, x2 + radius, y2 + radius);
+        line->setPen(_Pen);
         scene->addItem(line);
     }
 
@@ -232,5 +239,12 @@ void MainWindow::on_actionLoad_triggered()
 void MainWindow::on_actionQuit_triggered()
 {
     QApplication::quit();
+}
+
+void MainWindow::on_actionConvert_to_IMG_triggered()
+{
+    QString filename = "c0_l2_838.png";
+    QPixmap pixMap = ui->graphicsView->grab();
+    pixMap.save(filename);
 }
 

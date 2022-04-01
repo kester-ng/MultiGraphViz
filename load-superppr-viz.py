@@ -188,7 +188,7 @@ if __name__ == '__main__':
     # path = "/home/zhangsq/gviz-ppr/dataset/" + dataname +".txt"
     fpath = "/home/kester/" + dataname + ".txt"
     Gfull = nx.read_edgelist(fpath, nodetype=int)
-    A = nx.adjacency_matrix(Gfull)
+    A = nx.adjacency_matrix(Gfull,nodelist=sorted(Gfull.nodes()))
     n = Gfull.number_of_nodes()
 
 

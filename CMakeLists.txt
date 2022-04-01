@@ -92,6 +92,8 @@ set(PROJECT_SOURCES
         QGraphicsViewEc.h
         graph/GraphicNode.cpp
         graph/GraphicNode.h
+        Graphics_view_zoom.h
+        Graphics_view_zoom.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
