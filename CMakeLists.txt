@@ -94,6 +94,8 @@ set(PROJECT_SOURCES
         graph/GraphicNode.h
         Graphics_view_zoom.h
         Graphics_view_zoom.cpp
+        graph/customgraphicsscene.h
+        graph/customgraphicsscene.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

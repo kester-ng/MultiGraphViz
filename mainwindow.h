@@ -5,6 +5,7 @@
 #include "graph/QGVScene.h"
 #include <QWidget>
 #include <QMap>
+#include "graph/GraphicNode.h"
 
 QT_BEGIN_NAMESPACE
 class QPushButton;
@@ -30,8 +31,8 @@ public slots:
     void loadFromFile();
 
 private slots:
-    void nodeContextMenu(QGVNode* node);
-    void nodeDoubleClick(QGVNode* node);
+    void nodeContextMenu(GraphicNode* node);
+    void nodeDoubleClick(GraphicNode* node);
 
     void on_actionLoad_triggered();
     void on_actionQuit_triggered();

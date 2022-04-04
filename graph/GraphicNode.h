@@ -31,6 +31,11 @@ public:
 
     // item state
     bool Pressed;
+    enum { Type = UserType + 2 };
+    int type() const
+    {
+        return Type;
+    }
 protected:
     // overriding mouse events
     void mousePressEvent(QGraphicsSceneMouseEvent *event);

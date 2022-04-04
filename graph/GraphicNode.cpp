@@ -7,6 +7,7 @@ GraphicNode::GraphicNode(qreal x, qreal y, qreal radius) {
     this->x = x;
     this->y = y;
     this->radius = radius;
+    setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 
 QRectF GraphicNode::boundingRect() const

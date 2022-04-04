@@ -18,6 +18,7 @@
 #include <QStringList>
 #include <string>
 #include "Graphics_view_zoom.h"
+#include "graph/customgraphicsscene.h"
 
 typedef unsigned char BYTE;
 
@@ -28,13 +29,16 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->setupUi(this);
 
     _scene = new QGVScene("DEMO", this);
-    scene = new QGraphicsScene(this);
+    scene = new CustomGraphicsScene("DEMO", this);
 
     ui->graphicsView->setScene(scene);
     this->setWindowTitle("c0_l2_838");
 
     Graphics_view_zoom* z = new Graphics_view_zoom(ui->graphicsView);
     z->set_modifiers(Qt::NoModifier);
+
+    connect(scene, SIGNAL(nodeContextMenu(GraphicNode*)), SLOT(nodeContextMenu(GraphicNode*)));
+    connect(scene, SIGNAL(nodeDoubleClick(GraphicNode*)), SLOT(nodeDoubleClick(GraphicNode*)));
     /*
     std::ifstream file("/home/kester/actual_idx/inputds250_25c0_l3_0_fpsn.y", std::ios::out | std::ios::binary);
     file.unsetf(std::ios::skipws);
@@ -141,23 +145,22 @@ void MainWindow::drawGraph()
     ui->graphicsView->fitInView(_scene->sceneRect(), Qt::KeepAspectRatio);
 }
 
-void MainWindow::nodeContextMenu(QGVNode *node)
+void MainWindow::nodeContextMenu(GraphicNode *node)
 {
     //Context menu exemple
-    QMenu menu(node->label());
+    QMenu menu("C0_L1_234");
 
     menu.addSeparator();
-    menu.addAction(tr("Informations"));
-    menu.addAction(tr("Options"));
+    menu.addAction(tr("Zoom In"));
 
     QAction *action = menu.exec(QCursor::pos());
     if(action == 0)
         return;
 }
 
-void MainWindow::nodeDoubleClick(QGVNode *node)
+void MainWindow::nodeDoubleClick(GraphicNode *node)
 {
-    QMessageBox::information(this, tr("Node double clicked"), tr("Node %1").arg(node->label()));
+    QMessageBox::information(this, tr("Super Node Details"), tr("Node %1\nRadius: %2\nSize: 34").arg("C0_L1_234").arg(node->radius));
 }
 
 // Simple load from file function.
