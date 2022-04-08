@@ -160,7 +160,8 @@ void MainWindow::nodeContextMenu(GraphicNode *node)
 
 void MainWindow::nodeDoubleClick(GraphicNode *node)
 {
-    QMessageBox::information(this, tr("Super Node Details"), tr("Node %1\nRadius: %2\nx: %3\ny: %4").arg("C0_L1_234").arg(node->radius).arg(node->x).arg(node->y));
+    QString qstr = QString::fromStdString(node->name);
+    QMessageBox::information(this, tr("Super Node Details"), tr("Node %1\nRadius: %2\nx: %3\ny: %4").arg(qstr).arg(node->radius).arg(node->x).arg(node->y));
 }
 
 // Simple load from file function.
@@ -184,6 +185,8 @@ void MainWindow::loadFromFile()
         louvain.push_back(const_cast<char*>(louvain_args[i].c_str()));
     // louvain_algorithm(louvain_args.size(), &louvain[0]);
 
+    std::string path = "c0_l2_838";
+
     // now it is the dnppr algorithm
     std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", "c0_l2_838"}; // for now we only support taupush
     std::vector<char*> dnppr_cstrings;
@@ -193,9 +196,37 @@ void MainWindow::loadFromFile()
     // invoke method
     std::vector<std::vector<double>> coordinates = dnppr(dnppr_args.size(), &dnppr_cstrings[0]);
 
+    std::string delimiter = "_";
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> nodes_name(coordinates.size());
+    std::vector<std::string> parts(2);
+    int index = 0;
+    while ((pos = path.find(delimiter)) != std::string::npos) {
+        token = path.substr(0, pos);
+        parts[index] = token;
+        index += 1;
+        path.erase(0, pos + delimiter.length());
+    }
+
+    char level_chr =  parts[1][1];
+    int level = level_chr - '0';
+    level--; // decrease level by 1
+    assert(level > 0); // cannot go to 0
+    std::string lvl = parts[1];
+    lvl[1] = '0' + level; // change level to 1 lower
+
+    for (int i = 0; i < coordinates.size(); i++) {
+        double node_label = coordinates[i][3];
+        int node_label_int = (int) node_label;
+        std::string super_node_name = parts[0] + delimiter + lvl + delimiter + std::to_string(node_label_int);
+        std::cerr << super_node_name << std::endl;
+        nodes_name[i] = super_node_name;
+    }
+
     // plot graph
     for (int i = 0; i < coordinates.size(); i++) {
-        GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2]);
+        GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
         scene->addItem(node);
     }
     // std::system("python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=c0_l2_838");
@@ -213,20 +244,12 @@ void MainWindow::loadFromFile()
         double x2 = coordinates[t2][0];
         double y2 = coordinates[t2][1];
         double radius2 = coordinates[t2][2];
-        std::cerr << t1;
-        std:: cerr << " ";
-        std::cerr << t2;
-        std:: cerr<< " ";
-        std::cerr << x;
-        std::cerr << " ";
-        std::cerr << y;
-        std::cerr << "\n";
 
         QGraphicsLineItem* line = new QGraphicsLineItem();
         QPen _Pen;
         _Pen.setColor(Qt::black);
         _Pen.setWidth(0.5);
-        line->setLine(x + radius, y + radius, x2 + radius, y2 + radius);
+        line->setLine(x + radius, y + radius, x2 + radius2, y2 + radius2);
         line->setPen(_Pen);
         scene->addItem(line);
     }

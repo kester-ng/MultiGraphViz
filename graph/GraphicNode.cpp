@@ -3,10 +3,11 @@
 #include "GraphicNode.h"
 #include <iostream>
 
-GraphicNode::GraphicNode(qreal x, qreal y, qreal radius) {
+GraphicNode::GraphicNode(qreal x, qreal y, qreal radius, std::string name) {
     this->x = x;
     this->y = y;
     this->radius = radius;
+    this->name = name;
     setFlag(QGraphicsItem::ItemIsSelectable, true);
 }
 

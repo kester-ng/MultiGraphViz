@@ -155,12 +155,13 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     vector<vector<double>> coordinates(M);
     double * x = positions.data();
     double * y = positions.data()+M;
-
+    vector<int> super_nodes = super2super[path_input];
     for (int i = 0; i < M; i++) {
-        coordinates[i] = vector<double>(3); // x y and radius
+        coordinates[i] = vector<double>(4); // x y and radius
         coordinates[i][0] = x[i];
         coordinates[i][1] = y[i];
         coordinates[i][2] = radii[i];
+        coordinates[i][3] = super_nodes[i];
         std::cerr << x[i];
         std::cerr << " ";
         std::cerr << y[i];
@@ -168,6 +169,5 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
         std::cerr << radii[i];
         std:cerr << "\n";
     }
-
     return coordinates;
 }

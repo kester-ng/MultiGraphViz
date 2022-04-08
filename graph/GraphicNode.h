@@ -15,13 +15,14 @@ public:
     qreal x;
     qreal y;
     qreal radius;
+    std::string name;
     /*
     GraphicNode(qreal x, qreal y, qreal radius) {
         this->x = x;
         this->y = y;
         this->radius = radius;
     }*/
-    GraphicNode(qreal x, qreal y, qreal radius);
+    GraphicNode(qreal x, qreal y, qreal radius, std::string name);
     QRectF boundingRect() const;
 
     // overriding paint()
