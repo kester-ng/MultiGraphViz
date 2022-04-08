@@ -48,6 +48,7 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     full_mode = stoi(param.count("-full")?param["-full"]:"0");
     param_config(alg);
     int seed = stoi(param.count("-seed")?param["-seed"]:"2");
+    string path_input = param.count("-path")?param["-path"]: "c0_l2_838";
     srand(seed);
     string datapath = "/home/kester/";
 
@@ -125,16 +126,17 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
             for (int i = 0; i < sample; ++i) {
                 timeElasped = 0;
                 embedTimeElapsed = 0;
+                /*
                 vector<string> path;
-                init_container();
                 if (random_query)
                     generate_random_path(path,max_level);
                 else{
                     path.emplace_back(hubcluster[i]);
-                }
-                vector<string> test;
-                test.push_back("c0_l2_838");
-                interactive_visualize(test);
+                }*/
+                init_container();
+                vector<string> requested_path;
+                requested_path.push_back(path_input);
+                interactive_visualize(requested_path);
                 cerr <<timeElasped<<endl;
                 cout<<(timeElasped-embedTimeElapsed)<<endl;
                 totaldnpprtime += (timeElasped-embedTimeElapsed);

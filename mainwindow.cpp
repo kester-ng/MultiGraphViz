@@ -160,7 +160,7 @@ void MainWindow::nodeContextMenu(GraphicNode *node)
 
 void MainWindow::nodeDoubleClick(GraphicNode *node)
 {
-    QMessageBox::information(this, tr("Super Node Details"), tr("Node %1\nRadius: %2\nSize: 34").arg("C0_L1_234").arg(node->radius));
+    QMessageBox::information(this, tr("Super Node Details"), tr("Node %1\nRadius: %2\nx: %3\ny: %4").arg("C0_L1_234").arg(node->radius).arg(node->x).arg(node->y));
 }
 
 // Simple load from file function.
@@ -185,7 +185,7 @@ void MainWindow::loadFromFile()
     // louvain_algorithm(louvain_args.size(), &louvain[0]);
 
     // now it is the dnppr algorithm
-    std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0"}; // for now we only support taupush
+    std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", "c0_l2_838"}; // for now we only support taupush
     std::vector<char*> dnppr_cstrings;
     dnppr_cstrings.reserve(dnppr_args.size());
     for (size_t i = 0; i < dnppr_args.size(); i++)
