@@ -32,7 +32,6 @@ MainWindow::MainWindow(QWidget *parent) :
     scene = new CustomGraphicsScene("DEMO", this);
 
     ui->graphicsView->setScene(scene);
-    this->setWindowTitle("c0_l2_838");
 
     Graphics_view_zoom* z = new Graphics_view_zoom(ui->graphicsView);
     z->set_modifiers(Qt::NoModifier);
@@ -148,10 +147,12 @@ void MainWindow::drawGraph()
 void MainWindow::nodeContextMenu(GraphicNode *node)
 {
     //Context menu exemple
-    QMenu menu("C0_L1_234");
-
+    QString qstr = QString::fromStdString(node->name);
+    QMenu menu(qstr);
+    selected_node_to_zoom_in = node->name;
     menu.addSeparator();
-    menu.addAction(tr("Zoom In"));
+    QAction* zoom_in_action = menu.addAction(tr("Zoom In"));
+    connect(zoom_in_action, SIGNAL(triggered()), this, SLOT(zoom_in()));
 
     QAction *action = menu.exec(QCursor::pos());
     if(action == 0)
@@ -186,6 +187,7 @@ void MainWindow::loadFromFile()
     // louvain_algorithm(louvain_args.size(), &louvain[0]);
 
     std::string path = "c0_l2_838";
+    current_super_node = path;
 
     // now it is the dnppr algorithm
     std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", "c0_l2_838"}; // for now we only support taupush
@@ -212,7 +214,6 @@ void MainWindow::loadFromFile()
     char level_chr =  parts[1][1];
     int level = level_chr - '0';
     level--; // decrease level by 1
-    assert(level > 0); // cannot go to 0
     std::string lvl = parts[1];
     lvl[1] = '0' + level; // change level to 1 lower
 
@@ -220,7 +221,7 @@ void MainWindow::loadFromFile()
         double node_label = coordinates[i][3];
         int node_label_int = (int) node_label;
         std::string super_node_name = parts[0] + delimiter + lvl + delimiter + std::to_string(node_label_int);
-        std::cerr << super_node_name << std::endl;
+        // std::cerr << super_node_name << std::endl;
         nodes_name[i] = super_node_name;
     }
 
@@ -253,7 +254,86 @@ void MainWindow::loadFromFile()
         line->setPen(_Pen);
         scene->addItem(line);
     }
+    this->setWindowTitle(current_super_node.c_str());
+}
 
+void MainWindow::zoom_in() {
+    std::string path = selected_node_to_zoom_in;
+    std::string prev = current_super_node;
+    stack.push(prev); // add to history to pop when zooming out
+
+    current_super_node = selected_node_to_zoom_in;
+    std::string delimiter = "_";
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> parts(2);
+    int index = 0;
+    while ((pos = path.find(delimiter)) != std::string::npos) {
+        token = path.substr(0, pos);
+        parts[index] = token;
+        index += 1;
+        path.erase(0, pos + delimiter.length());
+    }
+
+    char level_chr =  parts[1][1];
+    int level = level_chr - '0';
+
+    if (level == 0) {
+        return; // cannot zoom in anymore
+    }
+
+    level--; // decrease level by 1
+    std::string lvl = parts[1];
+    lvl[1] = '0' + level; // change level to 1 lower
+    std::cerr << "Zooming in into " + selected_node_to_zoom_in << std::endl;
+
+    // clear the scene first
+    scene->clear();
+    std::string temp = selected_node_to_zoom_in;
+    std::vector<std::vector<double>> coordinates = visualize(temp);
+    std::vector<std::string> nodes_name(coordinates.size());
+
+
+    for (int i = 0; i < coordinates.size(); i++) {
+        double node_label = coordinates[i][3];
+        int node_label_int = (int) node_label;
+        std::string super_node_name = parts[0] + delimiter + lvl + delimiter + std::to_string(node_label_int);
+        std::cerr << super_node_name << std::endl;
+        nodes_name[i] = super_node_name;
+    }
+
+    // plot graph
+    for (int i = 0; i < coordinates.size(); i++) {
+        GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
+        scene->addItem(node);
+    }
+
+    std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + selected_node_to_zoom_in;
+    std::system(command.c_str());
+    std::string graph_file = selected_node_to_zoom_in + "-edge-list.txt";
+    FILE *fin = fopen(graph_file.c_str(), "r");
+    int t1, t2;
+    // 1 9, 8 14, 9 24
+    while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
+        if(t1 == t2) continue;
+        // plot edges
+        double x = coordinates[t1][0];
+        double y = coordinates[t1][1];
+        double radius = coordinates[t1][2];
+
+        double x2 = coordinates[t2][0];
+        double y2 = coordinates[t2][1];
+        double radius2 = coordinates[t2][2];
+
+        QGraphicsLineItem* line = new QGraphicsLineItem();
+        QPen _Pen;
+        _Pen.setColor(Qt::black);
+        _Pen.setWidth(0.5);
+        line->setLine(x + radius, y + radius, x2 + radius2, y2 + radius2);
+        line->setPen(_Pen);
+        scene->addItem(line);
+    }
+    this->setWindowTitle(current_super_node.c_str());
 }
 
 void MainWindow::on_actionLoad_triggered()
@@ -272,5 +352,86 @@ void MainWindow::on_actionConvert_to_IMG_triggered()
     QString filename = "c0_l2_838.png";
     QPixmap pixMap = ui->graphicsView->grab();
     pixMap.save(filename);
+}
+
+void MainWindow::on_actionZoom_Out_triggered() {
+    if (stack.size() == 0)
+        return; // nothing to zoom out
+
+    std::string path = stack.top();
+    stack.pop();
+    current_super_node = path; // set back current super_node
+    std::string temp = path;
+
+    std::string delimiter = "_";
+    size_t pos = 0;
+    std::string token;
+    std::vector<std::string> parts(2);
+    int index = 0;
+    while ((pos = path.find(delimiter)) != std::string::npos) {
+        token = path.substr(0, pos);
+        parts[index] = token;
+        index += 1;
+        path.erase(0, pos + delimiter.length());
+    }
+
+    char level_chr =  parts[1][1];
+    int level = level_chr - '0';
+
+    if (level == 0) {
+        return; // cannot zoom in anymore
+    }
+
+    level--; // decrease level by 1
+    std::string lvl = parts[1];
+    lvl[1] = '0' + level; // change level to 1 lower
+    std::cerr << "Zooming in into " + temp << std::endl;
+
+    // clear the scene first
+    scene->clear();
+    std::vector<std::vector<double>> coordinates = visualize(temp);
+    std::vector<std::string> nodes_name(coordinates.size());
+
+
+    for (int i = 0; i < coordinates.size(); i++) {
+        double node_label = coordinates[i][3];
+        int node_label_int = (int) node_label;
+        std::string super_node_name = parts[0] + delimiter + lvl + delimiter + std::to_string(node_label_int);
+        std::cerr << super_node_name << std::endl;
+        nodes_name[i] = super_node_name;
+    }
+
+    // plot graph
+    for (int i = 0; i < coordinates.size(); i++) {
+        GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
+        scene->addItem(node);
+    }
+
+    std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + temp;
+    std::system(command.c_str());
+    std::string graph_file = temp + "-edge-list.txt";
+    FILE *fin = fopen(graph_file.c_str(), "r");
+    int t1, t2;
+    // 1 9, 8 14, 9 24
+    while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
+        if(t1 == t2) continue;
+        // plot edges
+        double x = coordinates[t1][0];
+        double y = coordinates[t1][1];
+        double radius = coordinates[t1][2];
+
+        double x2 = coordinates[t2][0];
+        double y2 = coordinates[t2][1];
+        double radius2 = coordinates[t2][2];
+
+        QGraphicsLineItem* line = new QGraphicsLineItem();
+        QPen _Pen;
+        _Pen.setColor(Qt::black);
+        _Pen.setWidth(0.5);
+        line->setLine(x + radius, y + radius, x2 + radius2, y2 + radius2);
+        line->setPen(_Pen);
+        scene->addItem(line);
+    }
+    this->setWindowTitle(current_super_node.c_str());
 }
 

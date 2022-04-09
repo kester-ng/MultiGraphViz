@@ -6,6 +6,7 @@
 #include <QWidget>
 #include <QMap>
 #include "graph/GraphicNode.h"
+#include <stack>
 
 QT_BEGIN_NAMESPACE
 class QPushButton;
@@ -33,16 +34,21 @@ public slots:
 private slots:
     void nodeContextMenu(GraphicNode* node);
     void nodeDoubleClick(GraphicNode* node);
+    void zoom_in();
 
     void on_actionLoad_triggered();
     void on_actionQuit_triggered();
     void on_actionConvert_to_IMG_triggered();
+    void on_actionZoom_Out_triggered();
 
 private:
     Ui::MainWindow *ui;
     QGVScene *_scene;  
     QGraphicsScene *scene;
     QPushButton *loadButton;
+    std::string selected_node_to_zoom_in;
+    std::string current_super_node;
+    std::stack<std::string> stack;
 };
 
 #endif // MAINWINDOW_H
