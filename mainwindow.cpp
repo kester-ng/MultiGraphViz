@@ -38,20 +38,6 @@ MainWindow::MainWindow(QWidget *parent) :
 
     connect(scene, SIGNAL(nodeContextMenu(GraphicNode*)), SLOT(nodeContextMenu(GraphicNode*)));
     connect(scene, SIGNAL(nodeDoubleClick(GraphicNode*)), SLOT(nodeDoubleClick(GraphicNode*)));
-    /*
-    std::ifstream file("/home/kester/actual_idx/inputds250_25c0_l3_0_fpsn.y", std::ios::out | std::ios::binary);
-    file.unsetf(std::ios::skipws);
-    GraphicNode* node = new GraphicNode(0, 20, 10);
-    scene->addItem(node);
-    GraphicNode* node1 = new GraphicNode(200, 0, 10);
-    GraphicNode* node2 = new GraphicNode(0, 0, 10);
-    scene->addItem(node1);
-    // scene->addItem(node2);
-    QGraphicsLineItem* line = new QGraphicsLineItem();
-    line->setLine(10, 30, 210, 10);
-    scene->addItem(line);
-    */
-    // inputds250_25c0_l3_0_fpsn.r
 
     // connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
     // connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));
@@ -171,7 +157,7 @@ void MainWindow::loadFromFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Edge List"), "", tr("Edge List (*.abk);;All Files (*)"));
     std::string utf8_text = fileName.toUtf8().constData();
-    std::vector<std::string> args = {"-i", utf8_text, "-o", "/home/kester/test.bin"};
+    std::vector<std::string> args = {"-i", utf8_text, "-o", "test.bin"};
     std::vector<char*> cstrings;
     cstrings.reserve(args.size());
     for(size_t i = 0; i < args.size(); ++i)
@@ -186,11 +172,23 @@ void MainWindow::loadFromFile()
         louvain.push_back(const_cast<char*>(louvain_args[i].c_str()));
     // louvain_algorithm(louvain_args.size(), &louvain[0]);
 
-    std::string path = "c0_l2_838";
+
+    // grab the root of the cluster
+    std::string name;
+    std::ifstream rotifs;
+    rotifs.open("rootname.root");
+
+    while(!rotifs.eof())
+    {
+        rotifs >> name;
+        std::cerr << name << std::endl;
+    }
+
+    std::string path = name;
     current_super_node = path;
 
     // now it is the dnppr algorithm
-    std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", "c0_l2_838"}; // for now we only support taupush
+    std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", path}; // for now we only support taupush
     std::vector<char*> dnppr_cstrings;
     dnppr_cstrings.reserve(dnppr_args.size());
     for (size_t i = 0; i < dnppr_args.size(); i++)
@@ -230,8 +228,9 @@ void MainWindow::loadFromFile()
         GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
         scene->addItem(node);
     }
-    // std::system("python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=c0_l2_838");
-    std::string graph_file = "/home/kester/c0_l2_838-edge-list.txt";
+    std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + name;
+    std::system(command.c_str());
+    std::string graph_file = name + std::string("-edge-list.txt");
     FILE *fin = fopen(graph_file.c_str(), "r");
     int t1, t2;
     // 1 9, 8 14, 9 24

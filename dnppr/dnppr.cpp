@@ -65,28 +65,28 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     // if (verboses)
        // cout << "dataset: "<<filelist[fileno]<<endl;
 
-    hiename = std::string("/home/kester/hierarchy-output/") + std::string("hiename.dat");
-    rootname = std::string("/home/kester/hierarchy-output/") + std::string("rootname.root");
-    mapname = std::string("/home/kester/mapping-output/") + std::string("mapname.dat");
-    // storepath = "../"+filelist[fileno]+"_idx/"+filelist[fileno]+"ds250" +"_"+to_string(k);
-    storepath = std::string("/home/kester/actual_idx/inputds250") + "_" + to_string(k);
+    hiename = std::string("hiename.dat");
+    rootname = std::string("rootname.root");
+    mapname = std::string("mapname.dat");
+    storepath = std::string("inputds250") + "_" + to_string(k);
 
 
     graph = Graph(datapath,alpha,k);
     int max_level = load_multilevel();
     graph.max_level = max_level;
 
-    prpath = std::string("/home/kester/pr_idx/") + "input.dnpr";
+    prpath = "input.dnpr";
     if ((!buildflag && isFPSN) or (isBPSN)){
-        prpath = std::string("/home/kester/pr_idx/") + "input.dnpr";
+        prpath = "input.dnpr";
         // build_dnpr();
         deserialize_pr();
     }
+
     if (buildflag){
         if (isBPSN)
-            rwpath = std::string("/home/kester/bwd_idx/") + "output";
+            rwpath = "output";
         if (isRWIdx)
-            rwpath = std::string("/home/kester/rwidx/") +"randwalks"+"_"+to_string(k);
+            rwpath = std::string("randwalks")+"_"+to_string(k);
 
 //        int threads[] = {64,32,16,8,4,2,1};
         int threads[] = {1};
@@ -104,11 +104,11 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     } else{
         // load rwidx
         if (isRWIdx){
-            rwpath = std::string("/home/kester/rwidx/") +"randwalks"+"_"+to_string(k);
+            rwpath = std::string("randwalks")+"_"+to_string(k);
             deserialize_idx();
         }
         if (isBPSN){
-            rwpath = std::string("/home/kester/bwd_idx/") + "output";
+            rwpath = "output";
             deserialize_bwd();
         }
         if (!random_query){
