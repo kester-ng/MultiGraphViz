@@ -7,6 +7,8 @@
 #include <QMap>
 #include "graph/GraphicNode.h"
 #include <stack>
+#include <map>
+#include "graph/visualisation.h"
 
 QT_BEGIN_NAMESPACE
 class QPushButton;
@@ -41,6 +43,8 @@ private slots:
     void on_actionConvert_to_IMG_triggered();
     void on_actionZoom_Out_triggered();
 
+    void plot_graph_using_cache(std::string name);
+
 private:
     Ui::MainWindow *ui;
     QGVScene *_scene;  
@@ -49,6 +53,7 @@ private:
     std::string selected_node_to_zoom_in;
     std::string current_super_node;
     std::stack<std::string> stack;
+    std::map<std::string, Visualisation> cache;
 };
 
 #endif // MAINWINDOW_H

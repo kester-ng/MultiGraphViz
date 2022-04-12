@@ -96,6 +96,8 @@ set(PROJECT_SOURCES
         Graphics_view_zoom.cpp
         graph/customgraphicsscene.h
         graph/customgraphicsscene.cpp
+        graph/visualisation.h
+        graph/visualisation.cpp
 )
 
 if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)

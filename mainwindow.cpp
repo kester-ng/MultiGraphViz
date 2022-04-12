@@ -50,79 +50,6 @@ MainWindow::~MainWindow()
 
 void MainWindow::drawGraph()
 {
-    /*
-    _scene->loadLayout("digraph test{node [style=filled,fillcolor=white];N1 -> N2;N2 -> N3;N3 -> N4;N4 -> N1;}");
-    connect(_scene, SIGNAL(nodeContextMenu(QGVNode*)), SLOT(nodeContextMenu(QGVNode*)));
-    connect(_scene, SIGNAL(nodeDoubleClick(QGVNode*)), SLOT(nodeDoubleClick(QGVNode*)));
-    ui->graphicsView->setScene(_scene);
-    return;
-    */
-
-    //Configure scene attributes
-    /*
-    _scene->setGraphAttribute("label", "DEMO");
-
-    _scene->setGraphAttribute("splines", "ortho");
-    _scene->setGraphAttribute("rankdir", "LR");
-    //_scene->setGraphAttribute("concentrate", "true"); //Error !
-    _scene->setGraphAttribute("nodesep", "0.4");
-
-    _scene->setNodeAttribute("shape", "circle");
-    _scene->setNodeAttribute("style", "filled");
-    _scene->setNodeAttribute("fillcolor", "white");
-    _scene->setNodeAttribute("height", "1.2");
-    _scene->setEdgeAttribute("minlen", "3");
-    //_scene->setEdgeAttribute("dir", "both");
-
-    //Add some nodes
-    QGVNode *node1 = _scene->addNode("Node 1");
-    node1->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node2 = _scene->addNode("Node 2");
-    node2->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node3 = _scene->addNode("Node 3");
-    node3->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node4 = _scene->addNode("Node 4");
-    node4->setIcon(QImage(":/icons/cat.jpeg"));
-    QGVNode *node5 = _scene->addNode("Node 5");
-    node5->setIcon(QImage(":/icons/cat.jpeg"));
-    */
-    //Add some edges
-    /*
-    QGVEdge *edgeTest = _scene->addEdge(node1, node2, "TTL");
-    edgeTest->setAttribute("color", "red");
-    _scene->addEdge(node1, node2, "Edge 1");
-    _scene->addEdge(node1, node3, "Edge 2")->setAttribute("color", "blue");
-    _scene->addEdge(node2, node3, "Edge 3");
-
-    _scene->addEdge(node2, node4, "Edge 4")->setAttribute("color", "red");
-
-    _scene->addEdge(node4, node3, "Edge 5")->setAttribute("color", "red");
-
-    _scene->addEdge(node4, node2, "Edge 6");
-    _scene->addEdge(node4, node2, "Edge 7");
-    _scene->addEdge(node4, node2, "Edge 8");
-
-    _scene->addEdge(node4, node5, "Edge 9");
-    _scene->addEdge(node2, node5, "Edge 10");
-    */
-
-    /*
-    QGVSubGraph *sgraph = _scene->addSubGraph("SUB1");
-    sgraph->setAttribute("label", "OFFICE");
-
-    QGVNode *snode1 = sgraph->addNode("PC0152");
-    QGVNode *snode2 = sgraph->addNode("PC0153");
-
-    _scene->addEdge(snode1, snode2, "RT7");
-
-    _scene->addEdge(node3, snode1, "GB8");
-    _scene->addEdge(node3, snode2, "TS9");*/
-
-    /*
-    QGVSubGraph *ssgraph = sgraph->addSubGraph("SUB2");
-    ssgraph->setAttribute("label", "DESK");
-    _scene->addEdge(snode1, ssgraph->addNode("PC0155"), "S10");*/
-
     //Layout scene
     _scene->applyLayout();
 
@@ -234,8 +161,16 @@ void MainWindow::loadFromFile()
     FILE *fin = fopen(graph_file.c_str(), "r");
     int t1, t2;
     // 1 9, 8 14, 9 24
+    std::vector<std::vector<int>> edges;
     while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
         if(t1 == t2) continue;
+
+        // save edges
+        vector<int> edge;
+        edge.push_back(t1);
+        edge.push_back(t2);
+        edges.push_back(edge);
+
         // plot edges
         double x = coordinates[t1][0];
         double y = coordinates[t1][1];
@@ -254,6 +189,10 @@ void MainWindow::loadFromFile()
         scene->addItem(line);
     }
     this->setWindowTitle(current_super_node.c_str());
+
+    // create visualization cache
+    Visualisation visualization(coordinates, nodes_name, edges);
+    this->cache.insert( { current_super_node, visualization });
 }
 
 void MainWindow::zoom_in() {
@@ -262,6 +201,12 @@ void MainWindow::zoom_in() {
     stack.push(prev); // add to history to pop when zooming out
 
     current_super_node = selected_node_to_zoom_in;
+
+    if (this->cache.find(current_super_node) != this->cache.end()) {
+        plot_graph_using_cache(current_super_node);
+        return; //
+    }
+
     std::string delimiter = "_";
     size_t pos = 0;
     std::string token;
@@ -313,8 +258,16 @@ void MainWindow::zoom_in() {
     FILE *fin = fopen(graph_file.c_str(), "r");
     int t1, t2;
     // 1 9, 8 14, 9 24
+    std::vector<std::vector<int>> edges;
     while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
         if(t1 == t2) continue;
+
+        // save edges
+        vector<int> edge;
+        edge.push_back(t1);
+        edge.push_back(t2);
+        edges.push_back(edge);
+
         // plot edges
         double x = coordinates[t1][0];
         double y = coordinates[t1][1];
@@ -333,6 +286,9 @@ void MainWindow::zoom_in() {
         scene->addItem(line);
     }
     this->setWindowTitle(current_super_node.c_str());
+    // create visualization cache
+    Visualisation visualization(coordinates, nodes_name, edges);
+    this->cache.insert( { current_super_node, visualization });
 }
 
 void MainWindow::on_actionLoad_triggered()
@@ -361,6 +317,11 @@ void MainWindow::on_actionZoom_Out_triggered() {
     stack.pop();
     current_super_node = path; // set back current super_node
     std::string temp = path;
+
+    if (this->cache.find(current_super_node) != this->cache.end()) {
+        plot_graph_using_cache(current_super_node);
+        return; //
+    }
 
     std::string delimiter = "_";
     size_t pos = 0;
@@ -412,8 +373,16 @@ void MainWindow::on_actionZoom_Out_triggered() {
     FILE *fin = fopen(graph_file.c_str(), "r");
     int t1, t2;
     // 1 9, 8 14, 9 24
+    std::vector<std::vector<int>> edges;
     while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
         if(t1 == t2) continue;
+
+        // save edges
+        vector<int> edge;
+        edge.push_back(t1);
+        edge.push_back(t2);
+        edges.push_back(edge);
+
         // plot edges
         double x = coordinates[t1][0];
         double y = coordinates[t1][1];
@@ -422,6 +391,50 @@ void MainWindow::on_actionZoom_Out_triggered() {
         double x2 = coordinates[t2][0];
         double y2 = coordinates[t2][1];
         double radius2 = coordinates[t2][2];
+
+        QGraphicsLineItem* line = new QGraphicsLineItem();
+        QPen _Pen;
+        _Pen.setColor(Qt::black);
+        _Pen.setWidth(0.5);
+        line->setLine(x + radius, y + radius, x2 + radius2, y2 + radius2);
+        line->setPen(_Pen);
+        scene->addItem(line);
+    }
+    this->setWindowTitle(current_super_node.c_str());
+
+    // create visualization cache
+    Visualisation visualization(coordinates, nodes_name, edges);
+    this->cache.insert( { current_super_node, visualization });
+}
+
+void MainWindow::plot_graph_using_cache(std::string name) {
+    scene->clear(); // clear current scene first
+
+    // plot using visualisation
+    Visualisation visualisation = this->cache.at(name);
+
+    // plot graph
+    for (int i = 0; i < visualisation.coordinates.size(); i++) {
+        GraphicNode* node = new GraphicNode(visualisation.coordinates[i][0],
+                visualisation.coordinates[i][1], visualisation.coordinates[i][2], visualisation.node_names[i]);
+        scene->addItem(node);
+    }
+
+    // plot edges
+    for (int i = 0; i < visualisation.edgelist.size(); i++) {
+        vector<int> edge = visualisation.edgelist[i];
+        int t1 = edge[0];
+        int t2 = edge[1];
+
+
+        // plot edges
+        double x = visualisation.coordinates[t1][0];
+        double y = visualisation.coordinates[t1][1];
+        double radius = visualisation.coordinates[t1][2];
+
+        double x2 = visualisation.coordinates[t2][0];
+        double y2 = visualisation.coordinates[t2][1];
+        double radius2 = visualisation.coordinates[t2][2];
 
         QGraphicsLineItem* line = new QGraphicsLineItem();
         QPen _Pen;

@@ -179,8 +179,8 @@ if __name__ == '__main__':
     dataid = 7
     # dataid = int(dataid.encode("utf-8"))
     dataname = filelist[dataid]
-    hiefname = '/home/kester/hierarchy-output/hiename.dat' # %dataname # hard code this one, next week tuesday we refactor and make it generalized
-    mapfname = '/home/kester/mapping-output/mapname.dat' # %dataname
+    hiefname = './hiename.dat' # %dataname # hard code this one, next week tuesday we refactor and make it generalized
+    mapfname = './mapname.dat' # %dataname
 
     print("loading clusters...")
     load_community(hiefname, mapfname)
@@ -192,7 +192,7 @@ if __name__ == '__main__':
     n = Gfull.number_of_nodes()
 
 
-    storename = "/home/kester/actual_idx/inputds250_25".format(dataname, dataname)
+    storename = "./inputds250_25".format(dataname, dataname)
     zoompath = [[super_node]]
 
     for path in zoompath:
