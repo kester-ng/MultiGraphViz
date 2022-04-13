@@ -83,116 +83,121 @@ void MainWindow::nodeDoubleClick(GraphicNode *node)
 void MainWindow::loadFromFile()
 {
     QString fileName = QFileDialog::getOpenFileName(this, tr("Open Edge List"), "", tr("Edge List (*.abk);;All Files (*)"));
-    std::string utf8_text = fileName.toUtf8().constData();
-    std::vector<std::string> args = {"-i", utf8_text, "-o", "test.bin"};
-    std::vector<char*> cstrings;
-    cstrings.reserve(args.size());
-    for(size_t i = 0; i < args.size(); ++i)
-        cstrings.push_back(const_cast<char*>(args[i].c_str()));
-    // convert_edgelist_to_binary(4, &cstrings[0]);
+    bool ok;
+    int cluster_size = QInputDialog::getInt(0, "CLuster Size", "Cluster Size:", 25, 1, 2147483647, 1, &ok);
 
-    // Now we use louvain algorithm to get clustering information
-    std::vector<std::string> louvain_args = {"-f", "6", "-a", "1", "-k", "25", "-v"};
-    std::vector<char*> louvain;
-    louvain.reserve(louvain_args.size());
-    for (size_t i = 0; i < louvain_args.size(); ++i)
-        louvain.push_back(const_cast<char*>(louvain_args[i].c_str()));
-    // louvain_algorithm(louvain_args.size(), &louvain[0]);
+    if (ok) {
+        std::string utf8_text = fileName.toUtf8().constData();
+        std::vector<std::string> args = {"-i", utf8_text, "-o", "test.bin"};
+        std::vector<char*> cstrings;
+        cstrings.reserve(args.size());
+        for(size_t i = 0; i < args.size(); ++i)
+            cstrings.push_back(const_cast<char*>(args[i].c_str()));
+        // convert_edgelist_to_binary(4, &cstrings[0]);
+
+        // Now we use louvain algorithm to get clustering information
+        std::vector<std::string> louvain_args = {"-f", "6", "-a", "1", "-k", std::to_string(cluster_size), "-v"};
+        std::vector<char*> louvain;
+        louvain.reserve(louvain_args.size());
+        for (size_t i = 0; i < louvain_args.size(); ++i)
+            louvain.push_back(const_cast<char*>(louvain_args[i].c_str()));
+        // louvain_algorithm(louvain_args.size(), &louvain[0]);
 
 
-    // grab the root of the cluster
-    std::string name;
-    std::ifstream rotifs;
-    rotifs.open("rootname.root");
+        // grab the root of the cluster
+        std::string name;
+        std::ifstream rotifs;
+        rotifs.open("rootname.root");
 
-    while(!rotifs.eof())
-    {
-        rotifs >> name;
-        std::cerr << name << std::endl;
+        while(!rotifs.eof())
+        {
+            rotifs >> name;
+            std::cerr << name << std::endl;
+        }
+
+        std::string path = name;
+        current_super_node = path;
+
+        // now it is the dnppr algorithm
+        std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", path}; // for now we only support taupush
+        std::vector<char*> dnppr_cstrings;
+        dnppr_cstrings.reserve(dnppr_args.size());
+        for (size_t i = 0; i < dnppr_args.size(); i++)
+            dnppr_cstrings.push_back(const_cast<char*>(dnppr_args[i].c_str()));
+        // invoke method
+        std::vector<std::vector<double>> coordinates = dnppr(dnppr_args.size(), &dnppr_cstrings[0]);
+
+        std::string delimiter = "_";
+        size_t pos = 0;
+        std::string token;
+        std::vector<std::string> nodes_name(coordinates.size());
+        std::vector<std::string> parts(2);
+        int index = 0;
+        while ((pos = path.find(delimiter)) != std::string::npos) {
+            token = path.substr(0, pos);
+            parts[index] = token;
+            index += 1;
+            path.erase(0, pos + delimiter.length());
+        }
+
+        char level_chr =  parts[1][1];
+        int level = level_chr - '0';
+        level--; // decrease level by 1
+        std::string lvl = parts[1];
+        lvl[1] = '0' + level; // change level to 1 lower
+
+        for (int i = 0; i < coordinates.size(); i++) {
+            double node_label = coordinates[i][3];
+            int node_label_int = (int) node_label;
+            std::string super_node_name = parts[0] + delimiter + lvl + delimiter + std::to_string(node_label_int);
+            // std::cerr << super_node_name << std::endl;
+            nodes_name[i] = super_node_name;
+        }
+
+        // plot graph
+        for (int i = 0; i < coordinates.size(); i++) {
+            GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
+            scene->addItem(node);
+        }
+        std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + name;
+        std::system(command.c_str());
+        std::string graph_file = name + std::string("-edge-list.txt");
+        FILE *fin = fopen(graph_file.c_str(), "r");
+        int t1, t2;
+        // 1 9, 8 14, 9 24
+        std::vector<std::vector<int>> edges;
+        while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
+            if(t1 == t2) continue;
+
+            // save edges
+            vector<int> edge;
+            edge.push_back(t1);
+            edge.push_back(t2);
+            edges.push_back(edge);
+
+            // plot edges
+            double x = coordinates[t1][0];
+            double y = coordinates[t1][1];
+            double radius = coordinates[t1][2];
+
+            double x2 = coordinates[t2][0];
+            double y2 = coordinates[t2][1];
+            double radius2 = coordinates[t2][2];
+
+            QGraphicsLineItem* line = new QGraphicsLineItem();
+            QPen _Pen;
+            _Pen.setColor(Qt::black);
+            _Pen.setWidth(0.5);
+            line->setLine(x + radius, y + radius, x2 + radius2, y2 + radius2);
+            line->setPen(_Pen);
+            scene->addItem(line);
+        }
+        this->setWindowTitle(current_super_node.c_str());
+
+        // create visualization cache
+        Visualisation visualization(coordinates, nodes_name, edges);
+        this->cache.insert( { current_super_node, visualization });
     }
-
-    std::string path = name;
-    current_super_node = path;
-
-    // now it is the dnppr algorithm
-    std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", path}; // for now we only support taupush
-    std::vector<char*> dnppr_cstrings;
-    dnppr_cstrings.reserve(dnppr_args.size());
-    for (size_t i = 0; i < dnppr_args.size(); i++)
-        dnppr_cstrings.push_back(const_cast<char*>(dnppr_args[i].c_str()));
-    // invoke method
-    std::vector<std::vector<double>> coordinates = dnppr(dnppr_args.size(), &dnppr_cstrings[0]);
-
-    std::string delimiter = "_";
-    size_t pos = 0;
-    std::string token;
-    std::vector<std::string> nodes_name(coordinates.size());
-    std::vector<std::string> parts(2);
-    int index = 0;
-    while ((pos = path.find(delimiter)) != std::string::npos) {
-        token = path.substr(0, pos);
-        parts[index] = token;
-        index += 1;
-        path.erase(0, pos + delimiter.length());
-    }
-
-    char level_chr =  parts[1][1];
-    int level = level_chr - '0';
-    level--; // decrease level by 1
-    std::string lvl = parts[1];
-    lvl[1] = '0' + level; // change level to 1 lower
-
-    for (int i = 0; i < coordinates.size(); i++) {
-        double node_label = coordinates[i][3];
-        int node_label_int = (int) node_label;
-        std::string super_node_name = parts[0] + delimiter + lvl + delimiter + std::to_string(node_label_int);
-        // std::cerr << super_node_name << std::endl;
-        nodes_name[i] = super_node_name;
-    }
-
-    // plot graph
-    for (int i = 0; i < coordinates.size(); i++) {
-        GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
-        scene->addItem(node);
-    }
-    std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + name;
-    std::system(command.c_str());
-    std::string graph_file = name + std::string("-edge-list.txt");
-    FILE *fin = fopen(graph_file.c_str(), "r");
-    int t1, t2;
-    // 1 9, 8 14, 9 24
-    std::vector<std::vector<int>> edges;
-    while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
-        if(t1 == t2) continue;
-
-        // save edges
-        vector<int> edge;
-        edge.push_back(t1);
-        edge.push_back(t2);
-        edges.push_back(edge);
-
-        // plot edges
-        double x = coordinates[t1][0];
-        double y = coordinates[t1][1];
-        double radius = coordinates[t1][2];
-
-        double x2 = coordinates[t2][0];
-        double y2 = coordinates[t2][1];
-        double radius2 = coordinates[t2][2];
-
-        QGraphicsLineItem* line = new QGraphicsLineItem();
-        QPen _Pen;
-        _Pen.setColor(Qt::black);
-        _Pen.setWidth(0.5);
-        line->setLine(x + radius, y + radius, x2 + radius2, y2 + radius2);
-        line->setPen(_Pen);
-        scene->addItem(line);
-    }
-    this->setWindowTitle(current_super_node.c_str());
-
-    // create visualization cache
-    Visualisation visualization(coordinates, nodes_name, edges);
-    this->cache.insert( { current_super_node, visualization });
 }
 
 void MainWindow::zoom_in() {
@@ -304,9 +309,11 @@ void MainWindow::on_actionQuit_triggered()
 
 void MainWindow::on_actionConvert_to_IMG_triggered()
 {
-    QString filename = "c0_l2_838.png";
-    QPixmap pixMap = ui->graphicsView->grab();
-    pixMap.save(filename);
+    QString fileName = QFileDialog::getSaveFileName(this, tr("Save visualisation"), QString(), tr("Images (*.png)"));
+    if (!fileName.isEmpty()) {
+        QPixmap pixMap = ui->graphicsView->grab();
+        pixMap.save(fileName);
+    }
 }
 
 void MainWindow::on_actionZoom_Out_triggered() {
