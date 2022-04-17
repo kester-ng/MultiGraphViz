@@ -54,6 +54,7 @@ private:
     std::string current_super_node;
     std::stack<std::string> stack;
     std::map<std::string, Visualisation> cache;
+    std::string filename;
 };
 
 #endif // MAINWINDOW_H

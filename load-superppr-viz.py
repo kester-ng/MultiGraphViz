@@ -51,6 +51,7 @@ def load_ppr(path, size):
     PPRDeg = sparse.csr_matrix((data, (row1, col1)), shape=(size, size))
 
 def load_position(path):
+    print(path)
     global Xmds, r
     with open(path+"_fpsn.x", "rb") as fin:
         x = np.fromfile(fin, dtype=np.double)
@@ -172,8 +173,10 @@ def viz(target):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Process...')
     parser.add_argument('--supernode', type=str, default="c0_l2_57", help='Super node to zoom into')
+    parser.add_argument('--file', type=str, default="./dataset.txt", help='FIle path to data set')
     args = parser.parse_args()
     super_node = args.supernode
+    filename = args.file
     # global supernode_list, mapping_data, A, n
     # dataid = raw_input('data id :')
     dataid = 7
@@ -182,11 +185,12 @@ if __name__ == '__main__':
     hiefname = './hiename.dat' # %dataname # hard code this one, next week tuesday we refactor and make it generalized
     mapfname = './mapname.dat' # %dataname
 
-    print("loading clusters...")
+    print("loading clusters... for" + super_node)
     load_community(hiefname, mapfname)
     print("loading edges...")
     # path = "/home/zhangsq/gviz-ppr/dataset/" + dataname +".txt"
-    fpath = "/home/kester/" + dataname + ".txt"
+    fpath = filename
+    print(fpath)
     Gfull = nx.read_edgelist(fpath, nodetype=int)
     A = nx.adjacency_matrix(Gfull,nodelist=sorted(Gfull.nodes()))
     n = Gfull.number_of_nodes()

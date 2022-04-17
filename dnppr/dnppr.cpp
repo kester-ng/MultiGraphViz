@@ -80,7 +80,7 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     prpath = "input.dnpr";
     if ((!buildflag && isFPSN) or (isBPSN)){
         prpath = "input.dnpr";
-        build_dnpr();
+        // build_dnpr();
         deserialize_pr();
     }
 

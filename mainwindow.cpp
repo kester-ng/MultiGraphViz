@@ -88,6 +88,7 @@ void MainWindow::loadFromFile()
 
     if (ok) {
         std::string utf8_text = fileName.toUtf8().constData();
+        this->filename = utf8_text;
         std::vector<std::string> args = {"-i", utf8_text, "-o", "test.bin"};
         std::vector<char*> cstrings;
         cstrings.reserve(args.size());
@@ -159,7 +160,7 @@ void MainWindow::loadFromFile()
             GraphicNode* node = new GraphicNode(coordinates[i][0], coordinates[i][1], coordinates[i][2], nodes_name[i]);
             scene->addItem(node);
         }
-        std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + name;
+        std::string command = "python3 ./load-superppr-viz.py --supernode=" + name + " --file=" + this->filename;
         std::system(command.c_str());
         std::string graph_file = name + std::string("-edge-list.txt");
         FILE *fin = fopen(graph_file.c_str(), "r");
@@ -257,7 +258,7 @@ void MainWindow::zoom_in() {
         scene->addItem(node);
     }
 
-    std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + selected_node_to_zoom_in;
+    std::string command = "python3 ./load-superppr-viz.py --supernode=" + selected_node_to_zoom_in + " --file=" + this->filename;
     std::system(command.c_str());
     std::string graph_file = selected_node_to_zoom_in + "-edge-list.txt";
     FILE *fin = fopen(graph_file.c_str(), "r");
@@ -374,7 +375,7 @@ void MainWindow::on_actionZoom_Out_triggered() {
         scene->addItem(node);
     }
 
-    std::string command = "python3 /home/kester/MultiGraphViz/load-superppr-viz.py --supernode=" + temp;
+    std::string command = "python3 ./load-superppr-viz.py --supernode=" + temp + " --file=" + this->filename;
     std::system(command.c_str());
     std::string graph_file = temp + "-edge-list.txt";
     FILE *fin = fopen(graph_file.c_str(), "r");
