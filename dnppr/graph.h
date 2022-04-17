@@ -1,6 +1,7 @@
 #ifndef GRAPH_H
 #define GRAPH_H
 #include "lib.h"
+#include <set>
 using namespace std;
 
 bool sortdesc(const pair<double,int> &a,
@@ -48,6 +49,7 @@ public:
 
     void init_nm() {
         // string attribute_file = data_folder + FILECONNECT + "attribute.txt";
+        /*
         string attribute_file = "/home/kester/youtube_attribute.txt"; // attribute file?
         ifstream attr(attribute_file);
         string line1, line2;
@@ -61,7 +63,26 @@ public:
             attr >> c;
             if (c == '=') break;
         }
-        attr >> m;
+        attr >> m;*/
+
+        // string graph_file = "/home/kester/youtube.txt"; // the original file
+        std::cerr << this->data_folder;
+        FILE *fin = fopen(this->data_folder.c_str(), "r");
+        int t1, t2;
+        set<int> nodes;
+        int edges = 0;
+        while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
+            if(t1 == t2) continue;
+            edges++;
+            nodes.insert(t1);
+            nodes.insert(t2);
+        }
+
+        std::cerr << nodes.size() << std::endl;
+        std::cerr << edges << std::endl;
+
+        n = nodes.size();
+        m = edges;
     }
 
     void init_graph() {
@@ -70,8 +91,9 @@ public:
         deg.resize(n);
         iota (begin(nodes), end(nodes), 0);
         g = vector<vector<int>>(n, vector<int>());
-        string graph_file = "/home/kester/youtube.txt"; // the original file
-        FILE *fin = fopen(graph_file.c_str(), "r");
+        // string graph_file = "/home/kester/youtube.txt"; // the original file
+        std::cerr << this->data_folder;
+        FILE *fin = fopen(this->data_folder.c_str(), "r");
         int t1, t2;
         while (fscanf(fin, "%d%d", &t1, &t2) != EOF) {
             assert(t1 < n);
@@ -80,6 +102,7 @@ public:
             g[t1].push_back(t2);
             g[t2].push_back(t1);
         }
+
         for (int i = 0; i < n; ++i) {
             int d = g[i].size();
             deg[i] = d;

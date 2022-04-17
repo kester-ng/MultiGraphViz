@@ -49,6 +49,7 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     param_config(alg);
     int seed = stoi(param.count("-seed")?param["-seed"]:"2");
     string path_input = param.count("-path")?param["-path"]: "c0_l2_838";
+    string input_path = param.count("-input")?param["-input"] : "/home/kester/youtube.txt";
     srand(seed);
     string datapath = "/home/kester/";
 
@@ -71,7 +72,7 @@ vector<vector<double>> dnppr(int argc, char *argv[]) {
     storepath = std::string("inputds250") + "_" + to_string(k);
 
 
-    graph = Graph(datapath,alpha,k);
+    graph = Graph(input_path,alpha,k);
     int max_level = load_multilevel();
     graph.max_level = max_level;
 

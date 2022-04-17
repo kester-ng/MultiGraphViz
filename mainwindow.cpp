@@ -119,7 +119,7 @@ void MainWindow::loadFromFile()
         current_super_node = path;
 
         // now it is the dnppr algorithm
-        std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", path}; // for now we only support taupush
+        std::vector<std::string> dnppr_args = {"approx_dnppr", "-f", "6", "-alg", "fpsn", "-build", "0", "-path", path, "-input", utf8_text}; // for now we only support taupush
         std::vector<char*> dnppr_cstrings;
         dnppr_cstrings.reserve(dnppr_args.size());
         for (size_t i = 0; i < dnppr_args.size(); i++)
