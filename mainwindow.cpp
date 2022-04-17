@@ -93,7 +93,7 @@ void MainWindow::loadFromFile()
         cstrings.reserve(args.size());
         for(size_t i = 0; i < args.size(); ++i)
             cstrings.push_back(const_cast<char*>(args[i].c_str()));
-        // convert_edgelist_to_binary(4, &cstrings[0]);
+        convert_edgelist_to_binary(4, &cstrings[0]);
 
         // Now we use louvain algorithm to get clustering information
         std::vector<std::string> louvain_args = {"-f", "6", "-a", "1", "-k", std::to_string(cluster_size), "-v"};
@@ -101,7 +101,7 @@ void MainWindow::loadFromFile()
         louvain.reserve(louvain_args.size());
         for (size_t i = 0; i < louvain_args.size(); ++i)
             louvain.push_back(const_cast<char*>(louvain_args[i].c_str()));
-        // louvain_algorithm(louvain_args.size(), &louvain[0]);
+        louvain_algorithm(louvain_args.size(), &louvain[0]);
 
 
         // grab the root of the cluster
