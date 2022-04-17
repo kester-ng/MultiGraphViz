@@ -43,6 +43,10 @@
     <addaction name="actionSave"/>
     <addaction name="separator"/>
     <addaction name="actionQuit"/>
+    <addaction name="separator"/>
+    <addaction name="actionZoom_Out"/>
+    <addaction name="separator"/>
+    <addaction name="actionConvert_to_IMG"/>
    </widget>
    <addaction name="menuFile"/>
   </widget>
@@ -63,6 +67,16 @@
   <action name="actionQuit">
    <property name="text">
     <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionZoom_Out">
+   <property name="text">
+    <string>Zoom Out</string>
+   </property>
+  </action>
+  <action name="actionConvert_to_IMG">
+   <property name="text">
+    <string>Convert to IMG</string>
    </property>
   </action>
  </widget>

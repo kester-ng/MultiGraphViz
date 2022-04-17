@@ -22,7 +22,7 @@ inline usage(char *prog_name, const char *more) {
 }
 
 void
-inline parse_args(int argc, char **argv) {
+inline parse_args_for_convert(int argc, char **argv) {
   for (int i = 0; i < argc; i++) {
     if(argv[i][0] == '-') {
       switch(argv[i][1]) {
@@ -62,7 +62,7 @@ inline parse_args(int argc, char **argv) {
 
 int
 convert_edgelist_to_binary(int argc, char **argv) {
-  parse_args(argc, argv);
+  parse_args_for_convert(argc, argv);
 
   Graph g(infile, type);
   g.clean(type);

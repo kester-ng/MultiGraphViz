@@ -139,7 +139,7 @@ louvain_algorithm(int argc, char **argv) {
     parse_args(argc, argv);
     double starttime;
 
-    string strFname = "/home/kester/test.bin"; // hard coded for now
+    string strFname = "test.bin"; // hard coded for now
     filename = &strFname[0];
     cerr << filename << endl;
 
@@ -198,10 +198,9 @@ louvain_algorithm(int argc, char **argv) {
             cout <<total_time<<endl;
             cout << thread_num;
             if (thread_num==1){
-                // /home/kester/
-                string hiename = std::string("/home/kester/hierarchy-output/") + std::string("hiename.dat");
-                string rootname = std::string("/home/kester/hierarchy-output/") + std::string("rootname.root");
-                string mapname = std::string("/home/kester/mapping-output/") + std::string("mapname.dat");
+                string hiename = std::string("hiename.dat");
+                string rootname = std::string("rootname.root");
+                string mapname = std::string("mapname.dat");
                 write_partition(hiename, mapname, rootname);
             } else {
                 cerr << "WHY IS THIS HAPPENING?";
